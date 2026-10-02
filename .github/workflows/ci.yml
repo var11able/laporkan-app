@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, ci4]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: laporpak_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      CI_ENVIRONMENT: testing
+      database_tests_hostname: 127.0.0.1
+      database_tests_database: laporpak_test
+      database_tests_username: root
+      database_tests_password: root
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, mbstring, mysqli, gd, exif
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Coding standard
+        run: composer cs
+
+      - name: Static analysis
+        run: composer analyze
+
+      - name: Tests
+        run: composer test

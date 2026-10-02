@@ -34,8 +34,8 @@
   <!-- <p class="lead font-weight-bold">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p> -->
   <hr class="my-4">
   <p class="font-weight-bold">Silahkan memilih untuk Login jika anda sudah mempunyai akun atau daftar jika anda masih belum mempunyai akun.</p>
-  <a class="btn btn-primary btn-lg font-weight-bold" href="http://localhost/laporkan-app/landing/masuk"><i class="fas fa-fw fa-sign-in-alt"></i> MASUK</a>
-  <a class="btn btn-success btn-lg font-weight-bold" href="http://localhost/laporkan-app/landing/daftar"><i class="fas fa-fw fa-file-signature"></i> DAFTAR</a>
+  <a class="btn btn-primary btn-lg font-weight-bold" href="<?= base_url('landing/masuk'); ?>"><i class="fas fa-fw fa-sign-in-alt"></i> MASUK</a>
+  <a class="btn btn-success btn-lg font-weight-bold" href="<?= base_url('landing/daftar'); ?>"><i class="fas fa-fw fa-file-signature"></i> DAFTAR</a>
 </div>
 
 

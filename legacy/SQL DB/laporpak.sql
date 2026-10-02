@@ -21,6 +21,7 @@ SET time_zone = "+00:00";
 -- Database: `laporpak`
 --
 
+
 -- --------------------------------------------------------
 
 --
@@ -181,7 +182,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id_user`, `nama`, `username`, `password`, `no_telepon`, `jabatan`) VALUES
-(1, 'Administrator', 'admin', '$2y$10$L201Eud0B8zkRfT9wOctFeK1LSJWFxwDV8He41JDk4ggRLUb9aIC6', '08956434564', 'administrator');
+(1, 'Administrator', 'admin', '$2y$10$xyoID7ayr4xRqdqTE4D12ejBQEvO24idnVhiRHSsQtIGbnhJLJ6Mu', '08956434564', 'administrator');
 
 --
 -- Indexes for dumped tables

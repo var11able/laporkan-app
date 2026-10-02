@@ -1,0 +1,11 @@
+.git
+.env
+.agents
+vendor
+writable/cache/*
+writable/logs/*
+writable/session/*
+writable/debugbar/*
+writable/uploads/*
+public/uploads/*
+build
