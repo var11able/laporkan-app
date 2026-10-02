@@ -1,0 +1,83 @@
+services:
+  web:
+    build: .
+    container_name: laporkan_web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      CI_ENVIRONMENT: ${CI_ENVIRONMENT:-development}
+      app_baseURL: ${APP_BASE_URL:-http://localhost:8080/}
+      database_default_hostname: db
+      database_default_database: ${DB_NAME}
+      database_default_username: ${DB_USER}
+      database_default_password: ${DB_PASSWORD}
+      database_tests_hostname: db
+      database_tests_database: ${DB_NAME}_test
+      database_tests_username: root
+      database_tests_password: ${DB_ROOT_PASSWORD}
+      encryption_key: ${ENCRYPTION_KEY}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  legacy:
+    build: ./legacy
+    container_name: laporkan_legacy
+    restart: unless-stopped
+    profiles: ["legacy"]
+    ports:
+      - "${LEGACY_PORT:-8082}:80"
+    environment:
+      CI_ENV: development
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    volumes:
+      - ./legacy:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:11.4
+    container_name: laporkan_db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Jakarta
+    ports:
+      - "127.0.0.1:${DB_PORT:-3307}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: laporkan_pma
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PMA_PORT:-8081}:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
