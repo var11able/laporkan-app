@@ -1,4 +1,5 @@
-<?phpuse App\Enums\StatusPengaduan;
+<?php
+use App\Enums\StatusPengaduan;
 
 $transisi  = $pengaduan->status()->transisiBerikutnya();
 $errorFoto = galat('foto_tanggapan');

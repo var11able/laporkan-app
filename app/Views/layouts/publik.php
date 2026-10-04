@@ -1,4 +1,5 @@
-<?php$menu ??= '';
+<?php
+$menu ??= '';
 $warga ??= null;
 $aktif = static fn (string $kunci): string => $menu === $kunci ? ' aria-current="page"' : '';
 $inisial = $warga !== null ? mb_strtoupper(mb_substr($warga->nama, 0, 1)) : '';

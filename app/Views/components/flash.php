@@ -1,4 +1,5 @@
-<?php$sukses = session()->getFlashdata('sukses');
+<?php
+$sukses = session()->getFlashdata('sukses');
 $error  = session()->getFlashdata('error');
 $info   = session()->getFlashdata('info');
 ?>

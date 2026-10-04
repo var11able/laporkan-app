@@ -1,4 +1,5 @@
-<?php$pager->setSurroundCount(2);
+<?php
+$pager->setSurroundCount(2);
 ?>
 <?php if ($pager->getPageCount() > 1): ?>
 <nav class="paginasi" aria-label="Halaman">

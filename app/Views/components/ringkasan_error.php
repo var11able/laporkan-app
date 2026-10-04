@@ -1,4 +1,5 @@
-<?php$errors = semua_galat();
+<?php
+$errors = semua_galat();
 ?>
 <?php if ($errors !== []): ?>
     <div class="ringkasan-error" role="alert" tabindex="-1" data-fokus>

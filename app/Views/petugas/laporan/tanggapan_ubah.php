@@ -1,4 +1,5 @@
-<?php$errorFoto = galat('foto_tanggapan');
+<?php
+$errorFoto = galat('foto_tanggapan');
 ?>
 <?= $this->extend('layouts/petugas') ?>
 <?= $this->section('konten') ?>

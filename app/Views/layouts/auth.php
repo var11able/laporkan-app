@@ -1,4 +1,5 @@
-<?php$foto ??= 'hero';
+<?php
+$foto ??= 'hero';
 $sambutan ??= 'Satu laporan Anda membantu Indonesia bebas korupsi.';
 ?>
 <!doctype html>

@@ -1,4 +1,5 @@
-<?phpuse App\Enums\StatusPengaduan;
+<?php
+use App\Enums\StatusPengaduan;
 
 $opsiStatus = [];
 foreach (StatusPengaduan::cases() as $s) {

@@ -1,4 +1,5 @@
-<?php$menu ??= '';
+<?php
+$menu ??= '';
 $aktif = static fn (string $kunci): string => $menu === $kunci ? ' aria-current="page"' : '';
 $admin = $petugas->isAdmin();
 $inisial = mb_strtoupper(mb_substr($petugas->nama, 0, 1));

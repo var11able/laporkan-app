@@ -1,4 +1,3 @@
-<?php?>
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>
 

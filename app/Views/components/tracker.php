@@ -1,4 +1,5 @@
-<?phpuse App\Enums\StatusPengaduan;
+<?php
+use App\Enums\StatusPengaduan;
 
 $untuk ??= 'warga';
 $status     = $pengaduan->status();

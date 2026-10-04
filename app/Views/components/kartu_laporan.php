@@ -1,4 +1,5 @@
-<?php$url ??= url_to('laporan.detail', $p->nomor_laporan);
+<?php
+$url ??= url_to('laporan.detail', $p->nomor_laporan);
 ?>
 <article class="kartu-laporan">
     <div class="kartu-laporan__foto">

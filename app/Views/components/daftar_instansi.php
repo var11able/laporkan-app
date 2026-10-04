@@ -1,4 +1,5 @@
-<?php$instansi = [
+<?php
+$instansi = [
     'Komisi Pemberantasan Korupsi (KPK)',
     'Kejaksaan Agung Republik Indonesia',
     'Kejaksaan Tinggi',

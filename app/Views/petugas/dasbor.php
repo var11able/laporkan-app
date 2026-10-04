@@ -1,4 +1,5 @@
-<?php$maksMinggu  = max(1, ...array_column($perMinggu, 'jumlah'));
+<?php
+$maksMinggu  = max(1, ...array_column($perMinggu, 'jumlah'));
 $lebarSvg    = 560;
 $tinggiSvg   = 180;
 $lebarBatang = $lebarSvg / count($perMinggu);

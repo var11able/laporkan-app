@@ -1,4 +1,5 @@
-<?php$bisaDiubah = $pengaduan->status()->bisaDiubahWarga();
+<?php
+$bisaDiubah = $pengaduan->status()->bisaDiubahWarga();
 ?>
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>

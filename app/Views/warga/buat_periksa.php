@@ -1,4 +1,5 @@
-<?php$ubah     = static fn (string $slug): string => url_to('warga.laporan.langkah', $slug) . '?ubah=1';
+<?php
+$ubah     = static fn (string $slug): string => url_to('warga.laporan.langkah', $slug) . '?ubah=1';
 $kerugian = isset($draf['perkiraan_kerugian']) ? 'Rp ' . number_format((int) $draf['perkiraan_kerugian'], 0, ',', '.') : null;
 ?>
 <?= $this->extend('layouts/alur') ?>

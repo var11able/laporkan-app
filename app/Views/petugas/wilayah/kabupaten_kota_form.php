@@ -1,4 +1,5 @@
-<?php$baru = $kabupaten === null;
+<?php
+$baru = $kabupaten === null;
 ?>
 <?= $this->extend('layouts/petugas') ?>
 <?= $this->section('konten') ?>

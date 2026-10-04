@@ -1,4 +1,5 @@
-<?phpuse App\Entities\Pengaduan;
+<?php
+use App\Entities\Pengaduan;
 use App\Enums\StatusPengaduan;
 
 $query = static function (array $ubah) use ($filter): string {

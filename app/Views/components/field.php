@@ -1,4 +1,5 @@
-<?php$tipe    ??= 'text';
+<?php
+$tipe    ??= 'text';
 $hint    ??= null;
 $atribut ??= [];
 $kelas   ??= '';

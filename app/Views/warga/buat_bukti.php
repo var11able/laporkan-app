@@ -1,4 +1,5 @@
-<?phpuse App\Services\UploadService;
+<?php
+use App\Services\UploadService;
 
 $error = galat('bukti');
 $ubah  = service('request')->getGet('ubah') !== null;

@@ -1,4 +1,5 @@
-<?php$milikSaya = isset($warga) && $warga !== null && $pengaduan->milik($warga->getId());
+<?php
+$milikSaya = isset($warga) && $warga !== null && $pengaduan->milik($warga->getId());
 ?>
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>

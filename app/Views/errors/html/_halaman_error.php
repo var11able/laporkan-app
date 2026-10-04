@@ -1,4 +1,5 @@
-<?phphelper(['url', 'tampilan']);
+<?php
+helper(['url', 'tampilan']);
 ?>
 <!doctype html>
 <html lang="id">

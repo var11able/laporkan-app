@@ -1,4 +1,5 @@
-<?php$ubah    = service('request')->getGet('ubah') !== null;
+<?php
+$ubah    = service('request')->getGet('ubah') !== null;
 $dipilih = (string) old('id_kategori', (string) ($draf['id_kategori'] ?? ''));
 $error   = galat('id_kategori');
 ?>

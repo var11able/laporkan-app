@@ -1,4 +1,5 @@
-<?php$chip = [
+<?php
+$chip = [
     ''         => 'Semua',
     'diterima' => 'Diterima',
     'diproses' => 'Diproses',

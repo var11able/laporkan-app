@@ -1,4 +1,5 @@
-<?php$denganPelapor ??= false;
+<?php
+$denganPelapor ??= false;
 $tautan ??= null;
 $untuk = $denganPelapor ? 'petugas' : 'warga';
 ?>

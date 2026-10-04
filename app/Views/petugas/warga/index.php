@@ -1,4 +1,3 @@
-<?php?>
 <?= $this->extend('layouts/petugas') ?>
 <?= $this->section('konten') ?>
 

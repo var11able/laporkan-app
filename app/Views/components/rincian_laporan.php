@@ -1,4 +1,3 @@
-<?php?>
 <dl class="rincian">
     <dt>Jenis</dt>
     <dd><?= esc($pengaduan->kategori ?? 'Belum ditentukan') ?></dd>

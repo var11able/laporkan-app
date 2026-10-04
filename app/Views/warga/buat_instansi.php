@@ -1,4 +1,5 @@
-<?php$ubah = service('request')->getGet('ubah') !== null;
+<?php
+$ubah = service('request')->getGet('ubah') !== null;
 ?>
 <?= $this->extend('layouts/alur') ?>
 <?= $this->section('konten') ?>

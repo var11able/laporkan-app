@@ -1,4 +1,5 @@
-<?php$ubah     = service('request')->getGet('ubah') !== null;
+<?php
+$ubah     = service('request')->getGet('ubah') !== null;
 $kerugian = isset($draf['perkiraan_kerugian']) ? (string) $draf['perkiraan_kerugian'] : '';
 ?>
 <?= $this->extend('layouts/alur') ?>

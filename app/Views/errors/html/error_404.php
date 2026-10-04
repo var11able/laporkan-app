@@ -1,4 +1,5 @@
-<?php$isi = '<p>Periksa kembali alamat yang Anda ketik. Jika Anda mengikuti tautan dari tempat lain, halaman itu mungkin sudah dipindahkan atau dihapus.</p>';
+<?php
+$isi = '<p>Periksa kembali alamat yang Anda ketik. Jika Anda mengikuti tautan dari tempat lain, halaman itu mungkin sudah dipindahkan atau dihapus.</p>';
 
 if (ENVIRONMENT !== 'production' && isset($message) && $message !== '') {
     $isi .= '<p class="teks-muted teks-kecil">' . esc($message) . '</p>';

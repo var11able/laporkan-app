@@ -1,4 +1,5 @@
-<?php$hapus ??= null;
+<?php
+$hapus ??= null;
 $pilihHapus ??= null;
 ?>
 <ul class="daftar-bukti">

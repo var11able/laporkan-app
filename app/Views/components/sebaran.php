@@ -1,4 +1,5 @@
-<?php$maks = max(1, ...(array_column($baris, 'jumlah') ?: [1]));
+<?php
+$maks = max(1, ...(array_column($baris, 'jumlah') ?: [1]));
 ?>
 <section class="blok" aria-labelledby="<?= esc($id, 'attr') ?>">
     <h2 id="<?= esc($id, 'attr') ?>" class="blok__judul"><?= esc($judul) ?></h2>

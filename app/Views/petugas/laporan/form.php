@@ -1,4 +1,5 @@
-<?php$baru = $pengaduan === null;
+<?php
+$baru = $pengaduan === null;
 $aksi = $baru ? site_url('petugas/laporan') : url_to('petugas.laporan.detail', $pengaduan->id_pengaduan);
 ?>
 <?= $this->extend('layouts/petugas') ?>

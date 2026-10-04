@@ -1,4 +1,5 @@
-<?phpuse App\Enums\StatusPengaduan;
+<?php
+use App\Enums\StatusPengaduan;
 
 $status = StatusPengaduan::tryFrom($filter['status']);
 $untukPetugas = isset($petugas) && $petugas !== null;
