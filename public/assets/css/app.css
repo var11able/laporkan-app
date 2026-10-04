@@ -586,14 +586,25 @@ a.angka:hover .angka__label { color: var(--color-primary); text-decoration: unde
 
 .cara { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
 .cara__baris { display: grid; gap: var(--space-4); align-items: center; }
-.cara__foto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-lg); background: var(--color-subtle); }
 .cara__nomor { display: block; margin-bottom: var(--space-1); font-size: 3rem; font-weight: 800; line-height: 1; color: var(--color-accent); }
 .cara__teks h3 { font-size: 1.375rem; }
 .cara__teks p { max-width: 28rem; margin: 0; }
+.cara__ajakan { max-width: 40rem; margin: calc(-1 * var(--space-2)) 0 var(--space-6); }
+.cara__demo { min-width: 0; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-subtle); }
+.cara__demo .kartu { box-shadow: var(--shadow-md); }
+.cara__demo-label { display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-3); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-text-muted); }
+.cara__demo-label .ikon { width: 16px; height: 16px; }
+.cara__demo-kepala { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.cara__demo-centang { margin: var(--space-4) 0; }
+.cara__demo-hasil { margin: var(--space-4) 0 0; }
+.cara__demo [hidden] { display: none; }
+.cara__demo .tracker { margin-bottom: 0; }
+.cara__demo .tahap { margin-top: var(--space-5); }
+.cara__demo [data-demo-ulang] { margin-top: var(--space-4); }
 @media (min-width: 768px) {
   .cara { gap: var(--space-8); }
   .cara__baris { grid-template-columns: 1fr 1fr; gap: var(--space-7); }
-  .cara__baris:nth-child(even) .cara__foto { order: 2; }
+  .cara__baris:nth-child(even) .cara__demo { order: 2; }
 }
 
 .jenis-korupsi { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4) var(--space-6); margin: var(--space-5) 0 0; padding: 0; list-style: none; }
