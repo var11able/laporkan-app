@@ -6,17 +6,16 @@ use App\Controllers\BaseController;
 use App\Exceptions\AturanBisnisException;
 use App\Models\KabupatenKotaModel;
 use App\Models\KategoriModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\ProvinsiModel;
-use App\Services\PengaduanService;
+use App\Services\LaporanService;
 use App\Services\UploadService;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class BuatLaporan extends BaseController
 {
-    private const SESI = 'laporan_baru';
-
+    private const SESI    = 'laporan_baru';
     private const LANGKAH = [
         'jenis'     => 'Jenis dugaan korupsi',
         'kronologi' => 'Ceritakan kejadiannya',
@@ -110,13 +109,13 @@ class BuatLaporan extends BaseController
 
     public function terkirim(int $id): string
     {
-        $pengaduan = (new PengaduanModel())->milikWarga($this->auth->warga()->getId())->find($id);
+        $laporan = (new LaporanModel())->milikWarga($this->auth->warga()->getId())->find($id);
 
-        if ($pengaduan === null) {
+        if ($laporan === null) {
             throw $this->tidakDitemukan();
         }
 
-        return $this->tampil('warga/terkirim', ['judul' => 'Laporan terkirim', 'lebar' => 'sempit', 'pengaduan' => $pengaduan]);
+        return $this->tampil('warga/terkirim', ['judul' => 'Laporan terkirim', 'lebar' => 'sempit', 'laporan' => $laporan]);
     }
 
     private function simpanJenis(): RedirectResponse
@@ -162,7 +161,7 @@ class BuatLaporan extends BaseController
         $this->perbaruiDraf([
             'isi_laporan'        => trim($data['isi_laporan']),
             'waktu_kejadian'     => ($data['waktu_kejadian'] ?? '') ?: null,
-            'perkiraan_kerugian' => PengaduanService::angkaRupiah($data['perkiraan_kerugian'] ?? null),
+            'perkiraan_kerugian' => LaporanService::angkaRupiah($data['perkiraan_kerugian'] ?? null),
         ]);
 
         return $this->lanjut('kronologi');
@@ -248,7 +247,7 @@ class BuatLaporan extends BaseController
         $draf = $this->draf();
 
         try {
-            $pengaduan = service('pengaduan')->buat(
+            $laporan = service('laporan')->buat(
                 [
                     'id_kategori'        => $draf['id_kategori'],
                     'isi_laporan'        => $draf['isi_laporan'],
@@ -268,7 +267,7 @@ class BuatLaporan extends BaseController
 
         session()->remove(self::SESI);
 
-        return redirect()->to(url_to('warga.laporan.terkirim', $pengaduan->id_pengaduan));
+        return redirect()->to(url_to('warga.laporan.terkirim', $laporan->id_laporan));
     }
 
     private function lanjut(string $slug): RedirectResponse

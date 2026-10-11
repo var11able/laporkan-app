@@ -7,6 +7,9 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\Security\Exceptions\SecurityException;
 use Tests\Support\FeatureTestCase;
 
+/**
+ * @internal
+ */
 final class AuthTest extends FeatureTestCase
 {
     public function testHalamanMasukTampil(): void
@@ -111,7 +114,7 @@ final class AuthTest extends FeatureTestCase
         ]);
 
         $hasil->assertRedirectTo(url_to('warga.beranda'));
-        $this->seeInDatabase('masyarakat', ['username' => 'siti.aminah', 'nama' => 'Siti Aminah']);
+        $this->seeInDatabase('warga', ['username' => 'siti.aminah', 'nama' => 'Siti Aminah']);
     }
 
     public function testUsernameYangSudahDipakaiDitolak(): void
@@ -123,7 +126,7 @@ final class AuthTest extends FeatureTestCase
             'password' => 'rahasia123', 'password_konfirmasi' => 'rahasia123',
         ])->assertRedirect();
 
-        $this->assertSame(1, $this->db->table('masyarakat')->where('username', 'budi')->countAllResults());
+        $this->assertSame(1, $this->db->table('warga')->where('username', 'budi')->countAllResults());
         $this->assertArrayHasKey('username', $_SESSION['_ci_validation_errors'] ?? []);
     }
 
@@ -134,7 +137,7 @@ final class AuthTest extends FeatureTestCase
             'password' => 'abc', 'password_konfirmasi' => 'abc',
         ]);
 
-        $this->dontSeeInDatabase('masyarakat', ['username' => 'budi']);
+        $this->dontSeeInDatabase('warga', ['username' => 'budi']);
     }
 
     public function testPostTanpaTokenCsrfDitolak(): void

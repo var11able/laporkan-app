@@ -3,7 +3,7 @@
 namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
-use App\Models\MasyarakatModel;
+use App\Models\WargaModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class WargaAuth extends BaseController
@@ -60,7 +60,7 @@ class WargaAuth extends BaseController
         }
 
         $data  = $this->validator->getValidated();
-        $model = new MasyarakatModel();
+        $model = new WargaModel();
 
         $simpan = $model->insert([
             'nama'       => $data['nama'],

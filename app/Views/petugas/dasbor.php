@@ -78,7 +78,7 @@ $sapaan      = $jam < 11 ? 'Selamat pagi' : ($jam < 15 ? 'Selamat siang' : ($jam
                         <?= ikon('inbox') ?>
                     </div>
                     <div>
-                        <h3 class="daftar-laporan__judul potong-2"><a href="<?= url_to('petugas.laporan.detail', $p->id_pengaduan) ?>"><?= esc($p->isi_laporan) ?></a></h3>
+                        <h3 class="daftar-laporan__judul potong-2"><a href="<?= url_to('petugas.laporan.detail', $p->id_laporan) ?>"><?= esc($p->isi_laporan) ?></a></h3>
                         <div class="daftar-laporan__meta">
                             <span class="angka-tabular"><?= esc($p->nomor_laporan) ?></span>
                             <?php if ($p->kategori !== null): ?><span><?= esc($p->kategori) ?></span><?php endif ?>

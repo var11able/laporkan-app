@@ -1,10 +1,10 @@
 <?php
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 
 $untuk ??= 'warga';
 $identitasTerbuka ??= false;
 $entri = array_reverse($tanggapan);
-$label = static fn (StatusPengaduan $s): string => $untuk === 'petugas' ? $s->labelPetugas() : $s->labelWarga();
+$label = static fn (StatusLaporan $s): string => $untuk === 'petugas' ? $s->labelPetugas() : $s->labelWarga();
 ?>
 <ol class="riwayat" aria-label="Riwayat laporan">
     <?php foreach ($entri as $i => $t): ?>
@@ -34,9 +34,9 @@ $label = static fn (StatusPengaduan $s): string => $untuk === 'petugas' ? $s->la
     <li class="riwayat__item<?= $entri === [] ? ' riwayat__item--kini' : '' ?>">
         <span class="riwayat__titik" aria-hidden="true"></span>
         <div class="riwayat__kepala">
-            <h3 class="riwayat__judul"><?= esc($label(StatusPengaduan::Baru)) ?></h3>
-            <time class="riwayat__waktu" datetime="<?= tanggal_iso($pengaduan->tgl_pengaduan) ?>"><?= tanggal($pengaduan->tgl_pengaduan, $untuk !== 'publik') ?></time>
+            <h3 class="riwayat__judul"><?= esc($label(StatusLaporan::Baru)) ?></h3>
+            <time class="riwayat__waktu" datetime="<?= tanggal_iso($laporan->tgl_laporan) ?>"><?= tanggal($laporan->tgl_laporan, $untuk !== 'publik') ?></time>
         </div>
-        <p class="riwayat__oleh mb-0">Laporan dikirim<?= $untuk === 'petugas' ? ' oleh ' . esc(nama_pelapor($pengaduan, $identitasTerbuka)) : '' ?></p>
+        <p class="riwayat__oleh mb-0">Laporan dikirim<?= $untuk === 'petugas' ? ' oleh ' . esc(nama_pelapor($laporan, $identitasTerbuka)) : '' ?></p>
     </li>
 </ol>

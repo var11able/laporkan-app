@@ -4,8 +4,7 @@ namespace App\Controllers\Warga;
 
 use App\Controllers\BaseController;
 use App\Controllers\RekapFilter;
-use App\Entities\Pengaduan;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 
 class Rekap extends BaseController
 {
@@ -38,7 +37,7 @@ class Rekap extends BaseController
 
     private function laporan(array $filter): array
     {
-        return (new PengaduanModel())->denganRelasi()
+        return (new LaporanModel())->denganRelasi()
             ->milikWarga($this->auth->warga()->getId())
             ->filter($filter)
             ->terbaru()

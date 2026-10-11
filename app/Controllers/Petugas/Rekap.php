@@ -3,9 +3,8 @@
 namespace App\Controllers\Petugas;
 
 use App\Controllers\RekapFilter;
-use App\Entities\Pengaduan;
 use App\Models\KategoriModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\ProvinsiModel;
 
 class Rekap extends PetugasController
@@ -44,6 +43,6 @@ class Rekap extends PetugasController
 
     private function laporan(array $filter): array
     {
-        return (new PengaduanModel())->denganRelasi()->filter($filter)->terbaru()->findAll();
+        return (new LaporanModel())->denganRelasi()->filter($filter)->terbaru()->findAll();
     }
 }

@@ -8,7 +8,7 @@ use Config\Services;
 
 class UploadService
 {
-    public const FOLDER_PENGADUAN = 'pengaduan';
+    public const FOLDER_LAPORAN   = 'laporan';
     public const FOLDER_TANGGAPAN = 'tanggapan';
     public const MAX_KB           = 5120;
     public const MAKS_BUKTI       = 3;

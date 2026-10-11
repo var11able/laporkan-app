@@ -22,7 +22,7 @@ $untuk = $denganPelapor ? 'petugas' : 'warga';
                 <tr>
                     <td data-label="No."><?= $i + 1 ?></td>
                     <td class="nowrap" data-label="Nomor"><?= $tautan !== null ? '<a href="' . esc($tautan($p), 'attr') . '">' . esc($p->nomor_laporan) . '</a>' : esc($p->nomor_laporan) ?></td>
-                    <td class="nowrap" data-label="Tanggal"><?= tanggal($p->tgl_pengaduan, false) ?></td>
+                    <td class="nowrap" data-label="Tanggal"><?= tanggal($p->tgl_laporan, false) ?></td>
                     <?php if ($denganPelapor): ?><td data-label="Pelapor"><?= esc(nama_pelapor($p)) ?></td><?php endif ?>
                     <td data-label="Jenis"><?= esc($p->kategori ?? '–') ?><br><?= esc($p->provinsi ?? '–') ?></td>
                     <td data-label="Isi"><?= esc(penggalan($p->isi_laporan, 120)) ?></td>

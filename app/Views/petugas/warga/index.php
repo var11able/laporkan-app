@@ -2,7 +2,7 @@
 <?= $this->section('konten') ?>
 
 <div class="halaman-judul baris baris--antara">
-    <h1 class="mb-0">Masyarakat</h1>
+    <h1 class="mb-0">Warga</h1>
     <a class="tombol tombol--utama" href="<?= url_to('petugas.warga.baru') ?>"><?= ikon('plus') ?> Tambah akun</a>
 </div>
 
@@ -27,10 +27,10 @@
                         <?php  ?>
                         <?php if ($petugas->isAdmin()): ?><td><?= (int) $w->jumlah_laporan ?></td><?php endif ?>
                         <td class="kolom-aksi">
-                            <a class="tombol tombol--kecil" href="<?= url_to('petugas.warga.ubah', $w->id_masyarakat) ?>"><?= ikon('edit') ?> Ubah<span class="sr-only"> <?= esc($w->nama) ?></span></a>
+                            <a class="tombol tombol--kecil" href="<?= url_to('petugas.warga.ubah', $w->id_warga) ?>"><?= ikon('edit') ?> Ubah<span class="sr-only"> <?= esc($w->nama) ?></span></a>
                             <?php if ($petugas->isAdmin()): ?>
                                 <?= komponen('components/tombol_hapus', [
-                                    'aksi'       => site_url('petugas/warga/' . $w->id_masyarakat),
+                                    'aksi'       => site_url('petugas/warga/' . $w->id_warga),
                                     'konfirmasi' => 'Akun ' . $w->username . ' beserta ' . (int) $w->jumlah_laporan . ' laporannya akan dihapus permanen.',
                                 ]) ?>
                             <?php endif ?>

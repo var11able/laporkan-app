@@ -5,7 +5,7 @@ $errorFoto = galat('foto_tanggapan');
 <?= $this->section('konten') ?>
 
 <div class="halaman-judul">
-    <a class="kembali" href="<?= url_to('petugas.laporan.detail', $pengaduan->id_pengaduan) ?>"><?= ikon('chevron-left') ?> <?= esc($pengaduan->nomor_laporan) ?></a>
+    <a class="kembali" href="<?= url_to('petugas.laporan.detail', $laporan->id_laporan) ?>"><?= ikon('chevron-left') ?> <?= esc($laporan->nomor_laporan) ?></a>
     <h1 style="font-size:1.75rem">Ubah tanggapan</h1>
     <p class="mb-0">Status tanggapan ini: <?= status_badge($tanggapan->status(), 'petugas') ?> <span class="teks-muted">(status tidak dapat diubah; hapus tanggapan terakhir jika statusnya salah)</span></p>
 </div>
@@ -27,7 +27,7 @@ $errorFoto = galat('foto_tanggapan');
     </div>
     <div class="tombol-grup">
         <button type="submit" class="tombol tombol--utama">Simpan</button>
-        <a class="tombol" href="<?= url_to('petugas.laporan.detail', $pengaduan->id_pengaduan) ?>">Batal</a>
+        <a class="tombol" href="<?= url_to('petugas.laporan.detail', $laporan->id_laporan) ?>">Batal</a>
     </div>
 </form>
 

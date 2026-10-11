@@ -2,21 +2,24 @@
 
 namespace Tests\Feature;
 
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use Config\Services;
 use Tests\Support\FeatureTestCase;
 
+/**
+ * @internal
+ */
 final class PetugasTest extends FeatureTestCase
 {
     public function testSemuaHalamanPanelTampil(): void
     {
         $admin   = $this->buatPetugas('administrator', 'admin');
         $laporan = $this->buatLaporan($this->buatWarga());
-        $t       = Services::tanggapan(false)->tambah($laporan, $admin, StatusPengaduan::Diverifikasi, 'Ditinjau.');
+        $t       = Services::tanggapan(false)->tambah($laporan, $admin, StatusLaporan::Diverifikasi, 'Ditinjau.');
 
         $halaman = [
-            'petugas', 'petugas/laporan', 'petugas/laporan/baru', 'petugas/laporan/' . $laporan->id_pengaduan,
-            'petugas/laporan/' . $laporan->id_pengaduan . '/ubah', 'petugas/tanggapan/' . $t->id_tanggapan . '/ubah',
+            'petugas', 'petugas/laporan', 'petugas/laporan/baru', 'petugas/laporan/' . $laporan->id_laporan,
+            'petugas/laporan/' . $laporan->id_laporan . '/ubah', 'petugas/tanggapan/' . $t->id_tanggapan . '/ubah',
             'petugas/provinsi', 'petugas/provinsi/baru', 'petugas/kabupaten-kota', 'petugas/kabupaten-kota?provinsi=' . $this->idProvinsi(), 'petugas/kabupaten-kota/baru',
             'petugas/warga', 'petugas/warga/baru', 'petugas/pengguna', 'petugas/pengguna/baru',
             'petugas/saran', 'petugas/log', 'petugas/rekap', 'petugas/rekap/cetak', 'petugas/profil', 'petugas/profil/password',
@@ -43,24 +46,24 @@ final class PetugasTest extends FeatureTestCase
         $laporan  = $this->buatLaporan($this->buatWarga());
         $operator = $this->buatPetugas();
 
-        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_pengaduan . '/tanggapan', [
+        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_laporan . '/tanggapan', [
             'status_tanggapan' => 'proses', 'isi_tanggapan' => 'Sedang kami verifikasi.',
-        ])->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_pengaduan));
+        ])->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_laporan));
 
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan, 'status_pengaduan' => 'proses']);
-        $this->seeInDatabase('tanggapan', ['id_pengaduan' => $laporan->id_pengaduan, 'id_user' => $operator->getId()]);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan, 'status_laporan' => 'proses']);
+        $this->seeInDatabase('tanggapan', ['id_laporan' => $laporan->id_laporan, 'id_user' => $operator->getId()]);
     }
 
     public function testTransisiStatusIlegalDitolakLewatForm(): void
     {
         $laporan = $this->buatLaporan($this->buatWarga());
 
-        $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/laporan/' . $laporan->id_pengaduan . '/tanggapan', [
+        $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/laporan/' . $laporan->id_laporan . '/tanggapan', [
             'status_tanggapan' => 'selesai', 'isi_tanggapan' => 'Langsung selesai.',
         ])->assertRedirect();
 
         $this->assertStringContainsString('tidak dapat diubah', (string) ($_SESSION['error'] ?? ''));
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan, 'status_pengaduan' => 'belum_ditanggapi']);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan, 'status_laporan' => 'belum_ditanggapi']);
     }
 
     public function testOperatorTidakBisaMenghapusLaporanDanTercatat(): void
@@ -68,10 +71,10 @@ final class PetugasTest extends FeatureTestCase
         $laporan  = $this->buatLaporan($this->buatWarga());
         $operator = $this->buatPetugas();
 
-        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_pengaduan, [], 'DELETE')
+        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_laporan, [], 'DELETE')
             ->assertRedirectTo(url_to('petugas.dasbor'));
 
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan]);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan]);
         $this->assertSame(1, $this->db->table('log')->where('id_user', $operator->getId())->like('isi_log', 'Ditolak')->countAllResults());
     }
 
@@ -79,17 +82,17 @@ final class PetugasTest extends FeatureTestCase
     {
         $laporan = $this->buatLaporan($this->buatWarga());
 
-        $this->sebagaiPetugas($this->buatPetugas('administrator', 'admin'))->kirim('petugas/laporan/' . $laporan->id_pengaduan, [], 'DELETE')
+        $this->sebagaiPetugas($this->buatPetugas('administrator', 'admin'))->kirim('petugas/laporan/' . $laporan->id_laporan, [], 'DELETE')
             ->assertRedirectTo(url_to('petugas.laporan'));
 
-        $this->dontSeeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan]);
+        $this->dontSeeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan]);
     }
 
     public function testOperatorTidakBisaMenghapusTanggapan(): void
     {
         $laporan   = $this->buatLaporan($this->buatWarga());
         $operator  = $this->buatPetugas();
-        $tanggapan = Services::tanggapan(false)->tambah($laporan, $operator, StatusPengaduan::Diverifikasi, 'Ditinjau.');
+        $tanggapan = Services::tanggapan(false)->tambah($laporan, $operator, StatusLaporan::Diverifikasi, 'Ditinjau.');
 
         $this->sebagaiPetugas($operator)->kirim('petugas/tanggapan/' . $tanggapan->id_tanggapan, [], 'DELETE')
             ->assertRedirectTo(url_to('petugas.dasbor'));
@@ -104,10 +107,10 @@ final class PetugasTest extends FeatureTestCase
         $b     = $this->buatLaporan($warga, 'Laporan kedua untuk aksi massal.');
 
         $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/laporan/status-massal', [
-            'id' => [(string) $a->id_pengaduan, (string) $b->id_pengaduan], 'status_tanggapan' => 'proses', 'isi_tanggapan' => 'Semua sedang kami verifikasi.',
+            'id' => [(string) $a->id_laporan, (string) $b->id_laporan], 'status_tanggapan' => 'proses', 'isi_tanggapan' => 'Semua sedang kami verifikasi.',
         ])->assertRedirect();
 
-        $this->assertSame(2, $this->db->table('pengaduan')->where('status_pengaduan', 'proses')->countAllResults());
+        $this->assertSame(2, $this->db->table('laporan')->where('status_laporan', 'proses')->countAllResults());
     }
 
     public function testMeneruskanLaporanWajibMenyebutInstansiTujuan(): void
@@ -115,20 +118,20 @@ final class PetugasTest extends FeatureTestCase
         $operator = $this->buatPetugas();
         $warga    = $this->buatWarga();
         $laporan  = $this->buatLaporan($warga);
-        Services::tanggapan(false)->tambah($laporan, $operator, StatusPengaduan::Diverifikasi, 'Diverifikasi.');
-        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusPengaduan::Valid, 'Valid.');
-        $url = 'petugas/laporan/' . $laporan->id_pengaduan . '/tanggapan';
+        Services::tanggapan(false)->tambah($laporan, $operator, StatusLaporan::Diverifikasi, 'Diverifikasi.');
+        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusLaporan::Valid, 'Valid.');
+        $url = 'petugas/laporan/' . $laporan->id_laporan . '/tanggapan';
 
         $this->sebagaiPetugas($operator)->kirim($url, ['status_tanggapan' => 'pengerjaan', 'isi_tanggapan' => 'Kami teruskan.'])->assertRedirect();
         $this->assertStringContainsString('instansi tujuan', (string) ($_SESSION['error'] ?? ''));
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan, 'status_pengaduan' => 'valid']);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan, 'status_laporan' => 'valid']);
 
         $this->sebagaiPetugas($operator)->kirim($url, [
             'status_tanggapan' => 'pengerjaan', 'isi_tanggapan' => 'Kami teruskan.', 'instansi_tujuan' => 'Kejaksaan Negeri',
-        ])->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_pengaduan));
-        $this->seeInDatabase('tanggapan', ['id_pengaduan' => $laporan->id_pengaduan, 'status_tanggapan' => 'pengerjaan', 'instansi_tujuan' => 'Kejaksaan Negeri']);
+        ])->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_laporan));
+        $this->seeInDatabase('tanggapan', ['id_laporan' => $laporan->id_laporan, 'status_tanggapan' => 'pengerjaan', 'instansi_tujuan' => 'Kejaksaan Negeri']);
 
-        $this->sebagaiWarga($warga)->buka('warga/laporan/' . $laporan->id_pengaduan)->assertSee('Kejaksaan Negeri');
+        $this->sebagaiWarga($warga)->buka('warga/laporan/' . $laporan->id_laporan)->assertSee('Kejaksaan Negeri');
     }
 
     public function testPelaporRahasiaTidakTerlihatOlehOperator(): void
@@ -137,7 +140,7 @@ final class PetugasTest extends FeatureTestCase
         $laporan  = $this->buatLaporan($warga, 'Laporan dengan identitas dirahasiakan.', ['rahasia' => true]);
         $operator = $this->buatPetugas();
 
-        foreach (['petugas/laporan', 'petugas/laporan/' . $laporan->id_pengaduan, 'petugas/laporan/' . $laporan->id_pengaduan . '/ubah', 'petugas/rekap', 'petugas/rekap/cetak'] as $path) {
+        foreach (['petugas/laporan', 'petugas/laporan/' . $laporan->id_laporan, 'petugas/laporan/' . $laporan->id_laporan . '/ubah', 'petugas/rekap', 'petugas/rekap/cetak'] as $path) {
             $html = $this->sebagaiPetugas($operator)->buka($path)->getBody();
             $this->assertStringContainsString('Dirahasiakan', $html, $path);
             $this->assertStringNotContainsString($warga->nama, $html, $path);
@@ -150,7 +153,7 @@ final class PetugasTest extends FeatureTestCase
         $laporan  = $this->buatLaporan($this->buatWarga(), 'Laporan rahasia.', ['rahasia' => true]);
         $operator = $this->buatPetugas();
 
-        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_pengaduan . '/identitas')
+        $this->sebagaiPetugas($operator)->kirim('petugas/laporan/' . $laporan->id_laporan . '/identitas')
             ->assertRedirectTo(url_to('petugas.dasbor'));
 
         $this->assertSame(0, $this->db->table('log')->like('isi_log', 'Membuka identitas')->countAllResults());
@@ -162,10 +165,10 @@ final class PetugasTest extends FeatureTestCase
         $laporan = $this->buatLaporan($warga, 'Laporan rahasia.', ['rahasia' => true]);
         $admin   = $this->buatPetugas('administrator', 'admin');
 
-        $this->sebagaiPetugas($admin)->kirim('petugas/laporan/' . $laporan->id_pengaduan . '/identitas')
-            ->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_pengaduan));
+        $this->sebagaiPetugas($admin)->kirim('petugas/laporan/' . $laporan->id_laporan . '/identitas')
+            ->assertRedirectTo(url_to('petugas.laporan.detail', $laporan->id_laporan));
 
-        $this->lanjutkanSesi()->buka('petugas/laporan/' . $laporan->id_pengaduan)->assertSee($warga->nama);
+        $this->lanjutkanSesi()->buka('petugas/laporan/' . $laporan->id_laporan)->assertSee($warga->nama);
         $this->seeInDatabase('log', ['id_user' => $admin->getId(), 'isi_log' => 'Membuka identitas pelapor laporan ' . $laporan->nomor_laporan]);
     }
 
@@ -173,13 +176,13 @@ final class PetugasTest extends FeatureTestCase
     {
         $operator = $this->buatPetugas();
         $laporan  = $this->buatLaporan($this->buatWarga());
-        $url      = 'petugas/laporan/' . $laporan->id_pengaduan . '/publik';
+        $url      = 'petugas/laporan/' . $laporan->id_laporan . '/publik';
 
         $this->sebagaiPetugas($operator)->kirim($url, ['ringkasan_publik' => 'Dugaan pungutan liar di kantor pelayanan.'], 'PUT')->assertRedirect();
         $this->assertStringNotContainsString('Dugaan pungutan liar di kantor pelayanan.', $this->buka('laporan')->getBody());
 
-        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusPengaduan::Diverifikasi, 'Diverifikasi.');
-        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusPengaduan::Valid, 'Valid.');
+        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusLaporan::Diverifikasi, 'Diverifikasi.');
+        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $operator, StatusLaporan::Valid, 'Valid.');
         $this->assertStringContainsString('Dugaan pungutan liar di kantor pelayanan.', $this->buka('laporan')->getBody());
 
         $this->sebagaiPetugas($operator)->kirim($url, ['hapus' => '1'], 'PUT')->assertRedirect();
@@ -192,10 +195,10 @@ final class PetugasTest extends FeatureTestCase
     {
         $laporan = $this->buatLaporan($this->buatWarga());
 
-        $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/laporan/' . $laporan->id_pengaduan . '/publik', ['ringkasan_publik' => 'Pendek'], 'PUT')->assertRedirect();
+        $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/laporan/' . $laporan->id_laporan . '/publik', ['ringkasan_publik' => 'Pendek'], 'PUT')->assertRedirect();
 
         $this->assertArrayHasKey('ringkasan_publik', $_SESSION['_ci_validation_errors'] ?? []);
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan, 'ringkasan_publik' => null]);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan, 'ringkasan_publik' => null]);
     }
 
     public function testKotakMasukBisaDisaringJenisDanProvinsi(): void
@@ -248,7 +251,7 @@ final class PetugasTest extends FeatureTestCase
         $this->sebagaiPetugas($this->buatPetugas())->kirim('petugas/warga/' . $warga->getId(), [], 'DELETE')
             ->assertRedirectTo(url_to('petugas.dasbor'));
 
-        $this->seeInDatabase('masyarakat', ['id_masyarakat' => $warga->getId()]);
+        $this->seeInDatabase('warga', ['id_warga' => $warga->getId()]);
     }
 
     public function testAdminTidakBisaMenghapusAkunSendiri(): void

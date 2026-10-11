@@ -24,25 +24,6 @@ services:
       db:
         condition: service_healthy
 
-  legacy:
-    build: ./legacy
-    container_name: laporkan_legacy
-    restart: unless-stopped
-    profiles: ["legacy"]
-    ports:
-      - "${LEGACY_PORT:-8082}:80"
-    environment:
-      CI_ENV: development
-      DB_HOST: db
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-    volumes:
-      - ./legacy:/var/www/html
-    depends_on:
-      db:
-        condition: service_healthy
-
   db:
     image: mariadb:11.4
     container_name: laporkan_db

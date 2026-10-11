@@ -1,8 +1,8 @@
 <?php
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 
 $opsiStatus = [];
-foreach (StatusPengaduan::cases() as $s) {
+foreach (StatusLaporan::cases() as $s) {
     $opsiStatus[$s->value] = ($untuk ?? 'warga') === 'petugas' ? $s->labelPetugas() : $s->labelWarga();
 }
 ?>

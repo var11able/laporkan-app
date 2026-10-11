@@ -11,7 +11,7 @@ $baru = $akun === null;
 
 <?= komponen('components/ringkasan_error') ?>
 
-<form action="<?= $baru ? site_url('petugas/warga') : site_url('petugas/warga/' . $akun->id_masyarakat) ?>" method="post" class="form" novalidate autocomplete="off">
+<form action="<?= $baru ? site_url('petugas/warga') : site_url('petugas/warga/' . $akun->id_warga) ?>" method="post" class="form" novalidate autocomplete="off">
     <?= csrf_field() ?>
     <?php if (! $baru): ?><input type="hidden" name="_method" value="PUT"><?php endif ?>
     <?= komponen('components/field', ['nama' => 'nama', 'label' => 'Nama lengkap', 'nilai' => $akun?->nama ?? '', 'atribut' => ['maxlength' => 100]]) ?>

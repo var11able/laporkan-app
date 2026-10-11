@@ -3,7 +3,7 @@
 namespace App\Controllers\Publik;
 
 use App\Controllers\BaseController;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\TanggapanModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
@@ -13,16 +13,16 @@ class Lacak extends BaseController
     {
         $nomor          = strtoupper(trim((string) $this->request->getGet('nomor')));
         $tidakDitemukan = false;
-        $pengaduan      = null;
+        $laporan        = null;
 
         if ($nomor !== '') {
-            $pengaduan = (new PengaduanModel())->cariNomor($nomor);
+            $laporan = (new LaporanModel())->cariNomor($nomor);
 
-            if ($pengaduan !== null && $pengaduan->tampilPublik()) {
-                return redirect()->to(url_to('laporan.detail', $pengaduan->nomor_laporan));
+            if ($laporan !== null && $laporan->tampilPublik()) {
+                return redirect()->to(url_to('laporan.detail', $laporan->nomor_laporan));
             }
 
-            $tidakDitemukan = $pengaduan === null;
+            $tidakDitemukan = $laporan === null;
         }
 
         return $this->tampil('publik/lacak', [
@@ -30,8 +30,8 @@ class Lacak extends BaseController
             'menu'           => 'lacak',
             'nomor'          => $nomor,
             'tidakDitemukan' => $tidakDitemukan,
-            'pengaduan'      => $pengaduan,
-            'tanggapan'      => $pengaduan === null ? [] : (new TanggapanModel())->untukPengaduan($pengaduan->id_pengaduan),
+            'laporan'        => $laporan,
+            'tanggapan'      => $laporan === null ? [] : (new TanggapanModel())->untukLaporan($laporan->id_laporan),
             'lebar'          => 'sempit',
         ]);
     }

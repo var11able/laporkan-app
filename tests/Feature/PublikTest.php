@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
 use Tests\Support\FeatureTestCase;
 
+/**
+ * @internal
+ */
 final class PublikTest extends FeatureTestCase
 {
     public function testLaporanBelumDiverifikasiTidakTampilDiPublik(): void
@@ -60,7 +63,7 @@ final class PublikTest extends FeatureTestCase
     {
         $petugas = $this->buatPetugas();
         $laporan = $this->jadikanPublik($this->buatLaporan($this->buatWarga()), $petugas);
-        Services::tanggapan(false)->tambah($laporan, $petugas, StatusPengaduan::Diteruskan, 'Pesan pribadi untuk pelapor.', null, 'Komisi Pemberantasan Korupsi (KPK)');
+        Services::tanggapan(false)->tambah($laporan, $petugas, StatusLaporan::Diteruskan, 'Pesan pribadi untuk pelapor.', null, 'Komisi Pemberantasan Korupsi (KPK)');
 
         $html = $this->buka('laporan/' . $laporan->nomor_laporan)->getBody();
 
@@ -76,7 +79,7 @@ final class PublikTest extends FeatureTestCase
         $laporan = $this->buatLaporan($warga);
 
         $this->sebagaiWarga($warga)->buka('laporan/' . $laporan->nomor_laporan)
-            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_pengaduan));
+            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_laporan));
     }
 
     public function testNomorTidakDikenalMenghasilkan404(): void
@@ -96,7 +99,7 @@ final class PublikTest extends FeatureTestCase
     public function testLacakLaporanBelumPublikHanyaMenampilkanStatus(): void
     {
         $laporan = $this->buatLaporan($this->buatWarga(), 'Isi laporan yang tidak boleh terlihat.');
-        Services::tanggapan(false)->tambah($laporan, $this->buatPetugas(), StatusPengaduan::Diverifikasi, 'Pesan admin yang tidak boleh terlihat.');
+        Services::tanggapan(false)->tambah($laporan, $this->buatPetugas(), StatusLaporan::Diverifikasi, 'Pesan admin yang tidak boleh terlihat.');
 
         $html = $this->buka('lacak?nomor=' . $laporan->nomor_laporan)->getBody();
 
@@ -112,22 +115,12 @@ final class PublikTest extends FeatureTestCase
         $hasil->assertSee('tidak ditemukan');
     }
 
-    public function testUrlLamaDialihkanPermanen(): void
-    {
-        $laporan = $this->buatLaporan($this->buatWarga());
-
-        $hasil = $this->buka('landing/detailPengaduan/' . $laporan->id_pengaduan);
-
-        $hasil->assertStatus(301);
-        $hasil->assertRedirectTo(url_to('laporan.detail', $laporan->nomor_laporan));
-    }
-
     public function testFilterStatus(): void
     {
         $petugas  = $this->buatPetugas();
         $valid    = $this->jadikanPublik($this->buatLaporan($this->buatWarga('pelapor-a')), $petugas, 'Ringkasan laporan yang masih valid.');
         $teruskan = $this->jadikanPublik($this->buatLaporan($this->buatWarga('pelapor-b')), $petugas, 'Ringkasan laporan yang sudah diteruskan.');
-        Services::tanggapan(false)->tambah($teruskan, $petugas, StatusPengaduan::Diteruskan, 'Diteruskan.', null, 'Kejaksaan Negeri');
+        Services::tanggapan(false)->tambah($teruskan, $petugas, StatusLaporan::Diteruskan, 'Diteruskan.', null, 'Kejaksaan Negeri');
 
         $html = $this->buka('laporan?status=pengerjaan')->getBody();
 

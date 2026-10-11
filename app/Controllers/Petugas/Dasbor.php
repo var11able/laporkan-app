@@ -2,13 +2,13 @@
 
 namespace App\Controllers\Petugas;
 
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 
 class Dasbor extends PetugasController
 {
     public function index(): string
     {
-        $model     = new PengaduanModel();
+        $model     = new LaporanModel();
         $status    = $model->jumlahPerStatus();
         $awalBulan = date('Y-m-01 00:00:00');
 
@@ -24,9 +24,9 @@ class Dasbor extends PetugasController
             'perMinggu'   => $model->jumlahPerMinggu(8),
             'perKategori' => $model->jumlahPerKategori(),
             'perProvinsi' => $model->jumlahPerProvinsi(),
-            'menunggu'    => (new PengaduanModel())->denganRelasi()
-                ->where('pengaduan.status_pengaduan', 'belum_ditanggapi')
-                ->orderBy('pengaduan.tgl_pengaduan', 'ASC')
+            'menunggu'    => (new LaporanModel())->denganRelasi()
+                ->where('laporan.status_laporan', 'belum_ditanggapi')
+                ->orderBy('laporan.tgl_laporan', 'ASC')
                 ->findAll(5),
         ]);
     }

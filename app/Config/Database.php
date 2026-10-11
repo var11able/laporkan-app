@@ -6,11 +6,9 @@ use CodeIgniter\Database\Config;
 
 class Database extends Config
 {
-    public string $filesPath = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
-
+    public string $filesPath    = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
     public string $defaultGroup = 'default';
-
-    public array $default = [
+    public array $default       = [
         'DSN'          => '',
         'hostname'     => 'localhost',
         'username'     => '',
@@ -36,13 +34,12 @@ class Database extends Config
             'time'     => 'H:i:s',
         ],
     ];
-
     public array $tests = [
         'DSN'         => '',
         'hostname'    => '127.0.0.1',
         'username'    => 'root',
         'password'    => '',
-        'database'    => 'laporpak_test',
+        'database'    => 'laporkan_test',
         'DBDriver'    => 'MySQLi',
         'DBPrefix'    => '',
         'pConnect'    => false,

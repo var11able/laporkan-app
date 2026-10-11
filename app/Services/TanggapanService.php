@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Entities\Pengaduan;
+use App\Entities\LaporanKorupsi;
 use App\Entities\Tanggapan;
 use App\Entities\User;
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use App\Exceptions\AturanBisnisException;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\TanggapanModel;
 use CodeIgniter\Database\BaseConnection;
 use CodeIgniter\HTTP\Files\UploadedFile;
@@ -20,22 +20,22 @@ class TanggapanService
 
     public function __construct(
         private readonly TanggapanModel $tanggapanModel = new TanggapanModel(),
-        private readonly PengaduanModel $pengaduanModel = new PengaduanModel(),
+        private readonly LaporanModel $laporanModel = new LaporanModel(),
         private readonly UploadService $upload = new UploadService(),
         private readonly AuditLog $auditLog = new AuditLog(),
     ) {
         $this->db = Database::connect();
     }
 
-    public function tambah(Pengaduan $pengaduan, User $petugas, StatusPengaduan $statusBaru, string $isi, ?UploadedFile $foto = null, ?string $instansiTujuan = null): Tanggapan
+    public function tambah(LaporanKorupsi $laporan, User $petugas, StatusLaporan $statusBaru, string $isi, ?UploadedFile $foto = null, ?string $instansiTujuan = null): Tanggapan
     {
         $instansiTujuan = trim((string) $instansiTujuan);
 
-        if ($statusBaru === StatusPengaduan::Diteruskan && $instansiTujuan === '') {
+        if ($statusBaru === StatusLaporan::Diteruskan && $instansiTujuan === '') {
             throw new AturanBisnisException('Sebutkan instansi tujuan laporan ini diteruskan.');
         }
 
-        $statusLama = $pengaduan->status();
+        $statusLama = $laporan->status();
 
         if (! $statusLama->bisaBerubahKe($statusBaru)) {
             throw new AturanBisnisException(sprintf(
@@ -47,7 +47,7 @@ class TanggapanService
 
         $isi = trim($isi);
         if ($isi === '') {
-            throw new AturanBisnisException($statusBaru === StatusPengaduan::TidakValid
+            throw new AturanBisnisException($statusBaru === StatusLaporan::TidakValid
                 ? 'Tuliskan alasan mengapa laporan tidak dapat ditindaklanjuti.'
                 : 'Isi tanggapan wajib diisi.');
         }
@@ -60,9 +60,9 @@ class TanggapanService
             $id = $this->tanggapanModel->insert([
                 'isi_tanggapan'    => $isi,
                 'status_tanggapan' => $statusBaru->value,
-                'instansi_tujuan'  => $statusBaru === StatusPengaduan::Diteruskan ? mb_substr($instansiTujuan, 0, 255) : null,
+                'instansi_tujuan'  => $statusBaru === StatusLaporan::Diteruskan ? mb_substr($instansiTujuan, 0, 255) : null,
                 'foto_tanggapan'   => $namaFoto,
-                'id_pengaduan'     => $pengaduan->id_pengaduan,
+                'id_laporan'       => $laporan->id_laporan,
                 'id_user'          => $petugas->getId(),
             ]);
 
@@ -70,14 +70,14 @@ class TanggapanService
                 throw new AturanBisnisException(implode(' ', $this->tanggapanModel->errors()));
             }
 
-            $this->pengaduanModel->update($pengaduan->id_pengaduan, ['status_pengaduan' => $statusBaru->value]);
+            $this->laporanModel->update($laporan->id_laporan, ['status_laporan' => $statusBaru->value]);
 
             $this->auditLog->catat(sprintf(
                 'Menanggapi laporan %s: %s → %s%s',
-                $pengaduan->nomor_laporan,
+                $laporan->nomor_laporan,
                 $statusLama->labelPetugas(),
                 $statusBaru->labelPetugas(),
-                $statusBaru === StatusPengaduan::Diteruskan ? ' (' . $instansiTujuan . ')' : '',
+                $statusBaru === StatusLaporan::Diteruskan ? ' (' . $instansiTujuan . ')' : '',
             ), $petugas->getId());
 
             $this->db->transComplete();
@@ -118,7 +118,7 @@ class TanggapanService
         $this->auditLog->catat('Mengubah tanggapan #' . $tanggapan->id_tanggapan, $petugas->getId());
     }
 
-    public function hapusTerakhir(Tanggapan $tanggapan, User $petugas): StatusPengaduan
+    public function hapusTerakhir(Tanggapan $tanggapan, User $petugas): StatusLaporan
     {
         if (! $petugas->isAdmin()) {
             $this->auditLog->catat('Ditolak: mencoba menghapus tanggapan #' . $tanggapan->id_tanggapan, $petugas->getId());
@@ -126,7 +126,7 @@ class TanggapanService
             throw new AturanBisnisException('Hanya administrator yang dapat menghapus tanggapan.');
         }
 
-        $terakhir = $this->tanggapanModel->terakhirUntuk($tanggapan->id_pengaduan);
+        $terakhir = $this->tanggapanModel->terakhirUntuk($tanggapan->id_laporan);
 
         if ($terakhir === null || $terakhir->id_tanggapan !== $tanggapan->id_tanggapan) {
             throw new AturanBisnisException('Hanya tanggapan terakhir yang dapat dihapus.');
@@ -136,10 +136,10 @@ class TanggapanService
 
         $this->tanggapanModel->delete($tanggapan->id_tanggapan);
 
-        $sebelumnya = $this->tanggapanModel->terakhirUntuk($tanggapan->id_pengaduan);
-        $statusKini = $sebelumnya?->status() ?? StatusPengaduan::Baru;
+        $sebelumnya = $this->tanggapanModel->terakhirUntuk($tanggapan->id_laporan);
+        $statusKini = $sebelumnya?->status() ?? StatusLaporan::Baru;
 
-        $this->pengaduanModel->update($tanggapan->id_pengaduan, ['status_pengaduan' => $statusKini->value]);
+        $this->laporanModel->update($tanggapan->id_laporan, ['status_laporan' => $statusKini->value]);
 
         $this->auditLog->catat(sprintf(
             'Menghapus tanggapan #%d (%s); status laporan kembali ke %s',
@@ -155,28 +155,28 @@ class TanggapanService
         return $statusKini;
     }
 
-    public function ubahStatusMassal(array $idPengaduan, User $petugas, StatusPengaduan $statusBaru, string $isi, ?string $instansiTujuan = null): array
+    public function ubahStatusMassal(array $idLaporan, User $petugas, StatusLaporan $statusBaru, string $isi, ?string $instansiTujuan = null): array
     {
-        if ($statusBaru === StatusPengaduan::Diteruskan && trim((string) $instansiTujuan) === '') {
+        if ($statusBaru === StatusLaporan::Diteruskan && trim((string) $instansiTujuan) === '') {
             throw new AturanBisnisException('Sebutkan instansi tujuan laporan ini diteruskan.');
         }
 
         $hasil = ['berhasil' => 0, 'dilewati' => []];
 
-        foreach (array_unique($idPengaduan) as $id) {
-            $pengaduan = $this->pengaduanModel->find((int) $id);
+        foreach (array_unique($idLaporan) as $id) {
+            $laporan = $this->laporanModel->find((int) $id);
 
-            if ($pengaduan === null) {
+            if ($laporan === null) {
                 continue;
             }
 
-            if (! $pengaduan->status()->bisaBerubahKe($statusBaru)) {
-                $hasil['dilewati'][] = (string) $pengaduan->nomor_laporan;
+            if (! $laporan->status()->bisaBerubahKe($statusBaru)) {
+                $hasil['dilewati'][] = (string) $laporan->nomor_laporan;
 
                 continue;
             }
 
-            $this->tambah($pengaduan, $petugas, $statusBaru, $isi, null, $instansiTujuan);
+            $this->tambah($laporan, $petugas, $statusBaru, $isi, null, $instansiTujuan);
             $hasil['berhasil']++;
         }
 

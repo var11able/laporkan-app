@@ -2,8 +2,8 @@
 
 namespace App\Controllers\Petugas;
 
-use App\Models\MasyarakatModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
+use App\Models\WargaModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Warga extends PetugasController
@@ -11,13 +11,13 @@ class Warga extends PetugasController
     public function index(): string
     {
         $q     = trim((string) $this->request->getGet('q'));
-        $model = new MasyarakatModel();
+        $model = new WargaModel();
 
         if ($q !== '') {
             $model->groupStart()->like('nama', $q)->orLike('username', $q)->orLike('no_telepon', $q)->groupEnd();
         }
 
-        $warga = $model->select('masyarakat.*, (SELECT COUNT(*) FROM pengaduan p WHERE p.id_masyarakat = masyarakat.id_masyarakat) AS jumlah_laporan', false)
+        $warga = $model->select('warga.*, (SELECT COUNT(*) FROM laporan p WHERE p.id_warga = warga.id_warga) AS jumlah_laporan', false)
             ->orderBy('nama')
             ->paginate(25);
 
@@ -47,7 +47,7 @@ class Warga extends PetugasController
 
         $data             = $this->validator->getValidated();
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        $model            = new MasyarakatModel();
+        $model            = new WargaModel();
 
         if ($model->insert($data) === false) {
             return redirect()->back()->withInput()->with('_ci_validation_errors', $model->errors());
@@ -63,13 +63,13 @@ class Warga extends PetugasController
         return $this->tampil('petugas/warga/form', [
             'judul' => 'Ubah Akun Masyarakat',
             'menu'  => 'warga',
-            'akun'  => (new MasyarakatModel())->find($id) ?? throw $this->tidakDitemukan(),
+            'akun'  => (new WargaModel())->find($id) ?? throw $this->tidakDitemukan(),
         ]);
     }
 
     public function update(int $id): RedirectResponse
     {
-        $model = new MasyarakatModel();
+        $model = new WargaModel();
         $akun  = $model->find($id) ?? throw $this->tidakDitemukan();
 
         $aturan = $this->aturan() + [
@@ -96,15 +96,15 @@ class Warga extends PetugasController
 
     public function delete(int $id): RedirectResponse
     {
-        $akun = (new MasyarakatModel())->find($id) ?? throw $this->tidakDitemukan();
+        $akun = (new WargaModel())->find($id) ?? throw $this->tidakDitemukan();
 
-        $laporan = (new PengaduanModel())->milikWarga($id)->findAll();
+        $laporan = (new LaporanModel())->milikWarga($id)->findAll();
 
         foreach ($laporan as $p) {
-            service('pengaduan')->hapusOlehPetugas($p, $this->petugas());
+            service('laporan')->hapusOlehPetugas($p, $this->petugas());
         }
 
-        (new MasyarakatModel())->delete($id);
+        (new WargaModel())->delete($id);
         $this->catat('Menghapus akun masyarakat ' . $akun->username . ' beserta ' . count($laporan) . ' laporan');
 
         return redirect()->to(url_to('petugas.warga'))->with('sukses', 'Akun masyarakat ' . $akun->username . ' sudah dihapus.');

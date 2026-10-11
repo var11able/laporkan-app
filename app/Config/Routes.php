@@ -95,13 +95,3 @@ $routes->group('petugas', ['filter' => 'auth:petugas'], static function (RouteCo
     $routes->get('profil/password', 'Petugas\Profil::password', ['as' => 'petugas.password']);
     $routes->put('profil/password', 'Petugas\Profil::gantiPassword');
 });
-
-$routes->get('landing/detailPengaduan/(:num)', 'Publik\Laporan::legacy/$1');
-$routes->addRedirect('landing', 'beranda', 301);
-$routes->addRedirect('landing/masuk', 'masuk', 301);
-$routes->addRedirect('landing/daftar', 'daftar', 301);
-$routes->addRedirect('landing/privacyPolicy', 'privasi', 301);
-$routes->addRedirect('landing/termsAndConditions', 'syarat', 301);
-$routes->addRedirect('auth', 'petugas.masuk', 301);
-$routes->addRedirect('pelapor', 'warga.beranda', 301);
-$routes->addRedirect('admin', 'petugas.dasbor', 301);

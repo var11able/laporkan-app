@@ -6,6 +6,9 @@ use App\Services\UploadService;
 use CodeIgniter\Test\CIUnitTestCase;
 use Tests\Support\FakeUploadedFile;
 
+/**
+ * @internal
+ */
 final class UploadServiceTest extends CIUnitTestCase
 {
     private string $dir;
@@ -29,9 +32,9 @@ final class UploadServiceTest extends CIUnitTestCase
         $asli = FakeUploadedFile::jpegDenganExif(300, 200);
         $this->assertStringContainsString("Exif\0\0", (string) file_get_contents($asli->getTempName()));
 
-        $nama = (new UploadService($this->dir))->simpanFoto($asli, UploadService::FOLDER_PENGADUAN);
+        $nama = (new UploadService($this->dir))->simpanFoto($asli, UploadService::FOLDER_LAPORAN);
 
-        foreach (["pengaduan/{$nama}", "pengaduan/thumb/{$nama}"] as $relatif) {
+        foreach (["laporan/{$nama}", "laporan/thumb/{$nama}"] as $relatif) {
             $this->assertStringNotContainsString("Exif\0\0", (string) file_get_contents("{$this->dir}/{$relatif}"), $relatif);
         }
     }
@@ -57,9 +60,9 @@ final class UploadServiceTest extends CIUnitTestCase
             $this->markTestSkipped('Needs the exif extension to read the Orientation tag.');
         }
 
-        $nama = (new UploadService($this->dir))->simpanFoto(FakeUploadedFile::jpegDenganExif(300, 200, 6), UploadService::FOLDER_PENGADUAN);
+        $nama = (new UploadService($this->dir))->simpanFoto(FakeUploadedFile::jpegDenganExif(300, 200, 6), UploadService::FOLDER_LAPORAN);
 
-        [$lebar, $tinggi] = getimagesize("{$this->dir}/pengaduan/{$nama}");
+        [$lebar, $tinggi] = getimagesize("{$this->dir}/laporan/{$nama}");
         $this->assertSame([200, 300], [$lebar, $tinggi]);
     }
 }

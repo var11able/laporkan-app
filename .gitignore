@@ -27,11 +27,6 @@ public/uploads/*
 phpstan.cache/
 /tmp/
 
-legacy/application/cache/*
-!legacy/application/cache/index.html
-legacy/application/logs/*
-!legacy/application/logs/index.html
-
 /Docs
 /nbproject/
 .idea/*

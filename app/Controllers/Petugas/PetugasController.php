@@ -4,7 +4,7 @@ namespace App\Controllers\Petugas;
 
 use App\Controllers\BaseController;
 use App\Entities\User;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 
 abstract class PetugasController extends BaseController
 {
@@ -20,7 +20,7 @@ abstract class PetugasController extends BaseController
 
     protected function tampil(string $view, array $data = []): string
     {
-        $data['jumlahBaru'] ??= (new PengaduanModel())->where('status_pengaduan', 'belum_ditanggapi')->countAllResults();
+        $data['jumlahBaru'] ??= (new LaporanModel())->where('status_laporan', 'belum_ditanggapi')->countAllResults();
 
         return parent::tampil($view, $data);
     }

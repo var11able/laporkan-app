@@ -6,21 +6,21 @@ use CodeIgniter\Model;
 
 class BuktiModel extends Model
 {
-    protected $table         = 'bukti_pengaduan';
+    protected $table         = 'bukti_laporan';
     protected $primaryKey    = 'id_bukti';
     protected $returnType    = 'array';
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $updatedField  = '';
-    protected $allowedFields = ['id_pengaduan', 'nama_file', 'nama_asli', 'mime', 'ukuran'];
+    protected $allowedFields = ['id_laporan', 'nama_file', 'nama_asli', 'mime', 'ukuran'];
 
-    public function untukPengaduan(int $idPengaduan): array
+    public function untukLaporan(int $idLaporan): array
     {
-        return $this->where('id_pengaduan', $idPengaduan)->orderBy('id_bukti')->findAll();
+        return $this->where('id_laporan', $idLaporan)->orderBy('id_bukti')->findAll();
     }
 
-    public function jumlahUntuk(int $idPengaduan): int
+    public function jumlahUntuk(int $idLaporan): int
     {
-        return $this->where('id_pengaduan', $idPengaduan)->countAllResults();
+        return $this->where('id_laporan', $idLaporan)->countAllResults();
     }
 }

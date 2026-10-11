@@ -1,12 +1,12 @@
 <?php
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 
 $untuk ??= 'warga';
-$status     = $pengaduan->status();
+$status     = $laporan->status();
 $terakhir   = $tanggapan === [] ? null : $tanggapan[array_key_last($tanggapan)];
-$alur       = StatusPengaduan::alur();
+$alur       = StatusLaporan::alur();
 $posisi     = array_search($status, $alur, true);
-$diperbarui = $terakhir?->tgl_tanggapan ?? $pengaduan->tgl_pengaduan;
+$diperbarui = $terakhir?->tgl_tanggapan ?? $laporan->tgl_laporan;
 $tujuan     = null;
 
 foreach ($tanggapan as $t) {
@@ -19,7 +19,7 @@ foreach ($tanggapan as $t) {
         <div>
             <h2 class="tracker__judul" id="tracker-judul"><?= esc($untuk === 'petugas' ? $status->labelPetugas() : $status->labelWarga()) ?></h2>
             <?php if ($untuk === 'petugas'): ?>
-                <p class="tracker__penjelasan"><?= $status->transisiBerikutnya() === [] ? 'Laporan sudah selesai diproses.' : 'Langkah berikutnya: ' . esc(implode(' atau ', array_map(static fn (StatusPengaduan $s) => $s->labelPetugas(), $status->transisiBerikutnya()))) . '.' ?></p>
+                <p class="tracker__penjelasan"><?= $status->transisiBerikutnya() === [] ? 'Laporan sudah selesai diproses.' : 'Langkah berikutnya: ' . esc(implode(' atau ', array_map(static fn (StatusLaporan $s) => $s->labelPetugas(), $status->transisiBerikutnya()))) . '.' ?></p>
             <?php else: ?>
                 <p class="tracker__penjelasan"><?= esc($status->penjelasan()) ?></p>
             <?php endif ?>
@@ -30,7 +30,7 @@ foreach ($tanggapan as $t) {
         </div>
     </div>
 
-    <?php if ($status === StatusPengaduan::TidakValid): ?>
+    <?php if ($status === StatusLaporan::TidakValid): ?>
         <?php if ($untuk === 'publik'): ?>
             <p class="teks-kecil teks-muted" style="margin: var(--space-3) 0 0">Pelapor dapat membaca alasannya dengan masuk ke akunnya.</p>
         <?php else: ?>

@@ -2,43 +2,43 @@
 use App\Services\UploadService;
 
 $bukti ??= [];
-$rahasia  = $pengaduan === null ? true : $pengaduan->rahasia;
+$rahasia  = $laporan === null ? true : $laporan->rahasia;
 $sisa     = UploadService::MAKS_BUKTI - count($bukti);
 $errBukti = galat('bukti');
 ?>
 <?= komponen('components/field', [
     'nama' => 'id_kategori', 'label' => 'Jenis dugaan korupsi', 'tipe' => 'select', 'kelas' => 'input--sedang',
-    'opsi' => $opsiKategori, 'kosong' => 'Pilih jenis', 'nilai' => (string) ($pengaduan?->id_kategori ?? ''),
+    'opsi' => $opsiKategori, 'kosong' => 'Pilih jenis', 'nilai' => (string) ($laporan?->id_kategori ?? ''),
 ]) ?>
 <?= komponen('components/field', [
-    'nama' => 'isi_laporan', 'label' => 'Kronologi', 'tipe' => 'textarea', 'nilai' => $pengaduan?->isi_laporan ?? '',
+    'nama' => 'isi_laporan', 'label' => 'Kronologi', 'tipe' => 'textarea', 'nilai' => $laporan?->isi_laporan ?? '',
     'hint' => 'Apa yang terjadi, siapa yang terlibat, kapan, di mana, dan bagaimana caranya.',
     'atribut' => ['maxlength' => 5000, 'rows' => 7, 'data-hitung' => 'isi-hitung'],
 ]) ?>
 <span class="penghitung" id="isi-hitung" aria-live="polite"></span>
 <?= komponen('components/field', [
     'nama' => 'waktu_kejadian', 'label' => 'Waktu kejadian (tidak wajib)', 'tipe' => 'date', 'kelas' => 'input--sedang',
-    'nilai' => $pengaduan?->waktu_kejadian ?? '', 'atribut' => ['max' => date('Y-m-d')],
+    'nilai' => $laporan?->waktu_kejadian ?? '', 'atribut' => ['max' => date('Y-m-d')],
 ]) ?>
 <?= komponen('components/field', [
     'nama' => 'perkiraan_kerugian', 'label' => 'Perkiraan nilai uang yang terlibat (tidak wajib)', 'kelas' => 'input--sedang',
-    'hint' => 'Dalam rupiah, angka saja.', 'nilai' => (string) ($pengaduan?->perkiraan_kerugian ?? ''), 'atribut' => ['inputmode' => 'numeric', 'maxlength' => 30],
+    'hint' => 'Dalam rupiah, angka saja.', 'nilai' => (string) ($laporan?->perkiraan_kerugian ?? ''), 'atribut' => ['inputmode' => 'numeric', 'maxlength' => 30],
 ]) ?>
 <?= komponen('components/field', [
-    'nama' => 'instansi_terlapor', 'label' => 'Instansi atau kantor', 'nilai' => $pengaduan?->instansi_terlapor ?? '', 'atribut' => ['maxlength' => 255],
+    'nama' => 'instansi_terlapor', 'label' => 'Instansi atau kantor', 'nilai' => $laporan?->instansi_terlapor ?? '', 'atribut' => ['maxlength' => 255],
 ]) ?>
 <?= komponen('components/field', [
-    'nama' => 'pihak_terlapor', 'label' => 'Pihak yang terlibat (tidak wajib)', 'nilai' => $pengaduan?->pihak_terlapor ?? '', 'atribut' => ['maxlength' => 255],
+    'nama' => 'pihak_terlapor', 'label' => 'Pihak yang terlibat (tidak wajib)', 'nilai' => $laporan?->pihak_terlapor ?? '', 'atribut' => ['maxlength' => 255],
 ]) ?>
 <?= komponen('components/field', [
     'nama' => 'id_provinsi', 'label' => 'Provinsi', 'tipe' => 'select', 'kelas' => 'input--sedang',
-    'opsi' => $opsiProvinsi, 'kosong' => 'Pilih provinsi', 'nilai' => (string) ($pengaduan?->id_provinsi ?? ''),
+    'opsi' => $opsiProvinsi, 'kosong' => 'Pilih provinsi', 'nilai' => (string) ($laporan?->id_provinsi ?? ''),
     'atribut' => ['data-anak' => 'id_kabupaten_kota', 'data-url' => site_url('api/wilayah/__ID__/kabupaten-kota')],
 ]) ?>
 <?= komponen('components/field', [
     'nama' => 'id_kabupaten_kota', 'label' => 'Kabupaten/kota', 'tipe' => 'select', 'kelas' => 'input--sedang',
     'opsi' => $opsiKabupaten, 'kosong' => $opsiKabupaten === [] ? 'Pilih provinsi dulu' : 'Pilih kabupaten/kota',
-    'nilai' => (string) ($pengaduan?->id_kabupaten_kota ?? ''),
+    'nilai' => (string) ($laporan?->id_kabupaten_kota ?? ''),
 ]) ?>
 
 <fieldset class="field<?= $errBukti !== null ? ' field--error' : '' ?>">

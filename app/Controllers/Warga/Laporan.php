@@ -3,13 +3,13 @@
 namespace App\Controllers\Warga;
 
 use App\Controllers\BaseController;
-use App\Entities\Pengaduan;
-use App\Enums\StatusPengaduan;
+use App\Entities\LaporanKorupsi;
+use App\Enums\StatusLaporan;
 use App\Exceptions\AturanBisnisException;
 use App\Models\BuktiModel;
 use App\Models\KabupatenKotaModel;
 use App\Models\KategoriModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\ProvinsiModel;
 use App\Models\TanggapanModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -20,17 +20,17 @@ class Laporan extends BaseController
     public function index(): string
     {
         $idWarga   = $this->auth->warga()->getId();
-        $grup      = StatusPengaduan::kelompokWarga();
+        $grup      = StatusLaporan::kelompokWarga();
         $kelompok  = (string) $this->request->getGet('kelompok');
         $kelompok  = array_key_exists($kelompok, $grup) ? $kelompok : '';
         $cari      = trim((string) $this->request->getGet('q'));
-        $model     = new PengaduanModel();
-        $perStatus = (new PengaduanModel())->jumlahPerStatus($idWarga);
+        $model     = new LaporanModel();
+        $perStatus = (new LaporanModel())->jumlahPerStatus($idWarga);
 
         $laporan = $model->denganRelasi()
             ->milikWarga($idWarga)
             ->filter([
-                'statusIn' => $kelompok === '' ? [] : array_map(static fn (StatusPengaduan $s) => $s->value, $grup[$kelompok]),
+                'statusIn' => $kelompok === '' ? [] : array_map(static fn (StatusLaporan $s) => $s->value, $grup[$kelompok]),
                 'q'        => $cari,
             ])
             ->terbaru()
@@ -39,7 +39,7 @@ class Laporan extends BaseController
         $jumlah = [];
 
         foreach ($grup as $kunci => $daftar) {
-            $jumlah[$kunci] = array_sum(array_map(static fn (StatusPengaduan $s) => $perStatus[$s->value], $daftar));
+            $jumlah[$kunci] = array_sum(array_map(static fn (StatusLaporan $s) => $perStatus[$s->value], $daftar));
         }
 
         return $this->tampil('warga/laporan_index', [
@@ -57,34 +57,34 @@ class Laporan extends BaseController
 
     public function show(int $id): string
     {
-        $pengaduan = $this->laporanSaya($id);
+        $laporan = $this->laporanSaya($id);
 
         return $this->tampil('warga/laporan_detail', [
-            'judul'     => 'Laporan ' . $pengaduan->nomor_laporan,
+            'judul'     => 'Laporan ' . $laporan->nomor_laporan,
             'menu'      => 'laporan-saya',
-            'pengaduan' => $pengaduan,
-            'tanggapan' => (new TanggapanModel())->untukPengaduan($pengaduan->id_pengaduan),
-            'bukti'     => (new BuktiModel())->untukPengaduan($pengaduan->id_pengaduan),
+            'laporan'   => $laporan,
+            'tanggapan' => (new TanggapanModel())->untukLaporan($laporan->id_laporan),
+            'bukti'     => (new BuktiModel())->untukLaporan($laporan->id_laporan),
         ]);
     }
 
     public function edit(int $id): RedirectResponse|string
     {
-        $pengaduan = $this->laporanSaya($id);
+        $laporan = $this->laporanSaya($id);
 
-        if (! $pengaduan->status()->bisaDiubahWarga()) {
+        if (! $laporan->status()->bisaDiubahWarga()) {
             return redirect()->to(url_to('warga.laporan.detail', $id))
                 ->with('error', 'Laporan tidak dapat diubah karena sudah diperiksa admin.');
         }
 
-        $idProvinsi = old('id_provinsi', (string) ($pengaduan->id_provinsi ?? ''));
+        $idProvinsi = old('id_provinsi', (string) ($laporan->id_provinsi ?? ''));
 
         return $this->tampil('warga/laporan_ubah', [
             'judul'         => 'Ubah Laporan',
             'menu'          => 'laporan-saya',
             'lebar'         => 'sempit',
-            'pengaduan'     => $pengaduan,
-            'bukti'         => (new BuktiModel())->untukPengaduan($pengaduan->id_pengaduan),
+            'laporan'       => $laporan,
+            'bukti'         => (new BuktiModel())->untukLaporan($laporan->id_laporan),
             'opsiKategori'  => (new KategoriModel())->opsi(),
             'opsiProvinsi'  => (new ProvinsiModel())->opsi(),
             'opsiKabupaten' => $idProvinsi !== '' ? (new KabupatenKotaModel())->opsiUntukProvinsi((int) $idProvinsi) : [],
@@ -93,7 +93,7 @@ class Laporan extends BaseController
 
     public function update(int $id): RedirectResponse
     {
-        $pengaduan = $this->laporanSaya($id);
+        $laporan = $this->laporanSaya($id);
 
         if (! $this->validasi(self::aturanIsi())) {
             return $this->kembaliDenganError();
@@ -103,8 +103,8 @@ class Laporan extends BaseController
         $data['rahasia'] = $this->request->getPost('rahasia') !== null;
 
         try {
-            service('pengaduan')->ubahOlehWarga(
-                $pengaduan,
+            service('laporan')->ubahOlehWarga(
+                $laporan,
                 $this->auth->warga(),
                 $data,
                 $this->files('bukti'),
@@ -119,22 +119,22 @@ class Laporan extends BaseController
 
     public function delete(int $id): RedirectResponse
     {
-        $pengaduan = $this->laporanSaya($id);
+        $laporan = $this->laporanSaya($id);
 
         try {
-            service('pengaduan')->hapusOlehWarga($pengaduan, $this->auth->warga());
+            service('laporan')->hapusOlehWarga($laporan, $this->auth->warga());
         } catch (AturanBisnisException $e) {
             return redirect()->to(url_to('warga.laporan.detail', $id))->with('error', $e->getMessage());
         }
 
-        return redirect()->to(url_to('warga.beranda'))->with('sukses', 'Laporan ' . $pengaduan->nomor_laporan . ' sudah dihapus.');
+        return redirect()->to(url_to('warga.beranda'))->with('sukses', 'Laporan ' . $laporan->nomor_laporan . ' sudah dihapus.');
     }
 
     public function bukti(int $id, int $idBukti): ResponseInterface
     {
-        $pengaduan = $this->laporanSaya($id);
-        $bukti     = (new BuktiModel())->where('id_pengaduan', $pengaduan->id_pengaduan)->find($idBukti);
-        $path      = $bukti === null ? null : service('upload')->pathBukti($bukti['nama_file']);
+        $laporan = $this->laporanSaya($id);
+        $bukti   = (new BuktiModel())->where('id_laporan', $laporan->id_laporan)->find($idBukti);
+        $path    = $bukti === null ? null : service('upload')->pathBukti($bukti['nama_file']);
 
         if ($path === null) {
             throw $this->tidakDitemukan('Bukti tidak ditemukan.');
@@ -156,17 +156,17 @@ class Laporan extends BaseController
         ];
     }
 
-    private function laporanSaya(int $id): Pengaduan
+    private function laporanSaya(int $id): LaporanKorupsi
     {
-        $pengaduan = (new PengaduanModel())->denganRelasi()
+        $laporan = (new LaporanModel())->denganRelasi()
             ->milikWarga($this->auth->warga()->getId())
-            ->where('pengaduan.id_pengaduan', $id)
+            ->where('laporan.id_laporan', $id)
             ->first();
 
-        if ($pengaduan === null) {
+        if ($laporan === null) {
             throw $this->tidakDitemukan('Laporan tidak ditemukan.');
         }
 
-        return $pengaduan;
+        return $laporan;
     }
 }

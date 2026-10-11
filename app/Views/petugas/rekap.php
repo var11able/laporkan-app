@@ -13,7 +13,7 @@
 <?php if ($laporan === []): ?>
     <div class="kosong"><?= ikon('search') ?><p>Tidak ada laporan pada rentang ini.</p></div>
 <?php else: ?>
-    <?= komponen('components/tabel_rekap', ['laporan' => $laporan, 'denganPelapor' => true, 'tautan' => static fn ($p) => url_to('petugas.laporan.detail', $p->id_pengaduan)]) ?>
+    <?= komponen('components/tabel_rekap', ['laporan' => $laporan, 'denganPelapor' => true, 'tautan' => static fn ($p) => url_to('petugas.laporan.detail', $p->id_laporan)]) ?>
 <?php endif ?>
 
 <?= $this->endSection() ?>

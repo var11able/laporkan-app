@@ -3,7 +3,7 @@
 namespace App\Controllers\Warga;
 
 use App\Controllers\BaseController;
-use App\Models\MasyarakatModel;
+use App\Models\WargaModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Profil extends BaseController
@@ -27,7 +27,7 @@ class Profil extends BaseController
             return $this->kembaliDenganError();
         }
 
-        (new MasyarakatModel())->update($this->auth->warga()->getId(), $this->validator->getValidated());
+        (new WargaModel())->update($this->auth->warga()->getId(), $this->validator->getValidated());
         $this->auth->segarkan();
 
         return redirect()->to(url_to('warga.profil'))->with('sukses', 'Profil sudah diperbarui.');
@@ -59,7 +59,7 @@ class Profil extends BaseController
             return redirect()->back()->with('_ci_validation_errors', ['password_lama' => 'Kata sandi saat ini salah.']);
         }
 
-        (new MasyarakatModel())->update($warga->getId(), ['password' => password_hash($data['password_baru'], PASSWORD_DEFAULT)]);
+        (new WargaModel())->update($warga->getId(), ['password' => password_hash($data['password_baru'], PASSWORD_DEFAULT)]);
 
         return redirect()->to(url_to('warga.profil'))->with('sukses', 'Kata sandi sudah diganti.');
     }

@@ -1,7 +1,7 @@
 <?php
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 
-$status = StatusPengaduan::tryFrom($filter['status']);
+$status = StatusLaporan::tryFrom($filter['status']);
 $untukPetugas = isset($petugas) && $petugas !== null;
 ?>
 <?= $this->extend('layouts/cetak') ?>

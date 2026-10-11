@@ -3,18 +3,18 @@
 namespace App\Controllers\Petugas;
 
 use App\Entities\Tanggapan as TanggapanEntity;
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use App\Exceptions\AturanBisnisException;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\TanggapanModel;
 use App\Services\UploadService;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Tanggapan extends PetugasController
 {
-    public function create(int $idPengaduan): RedirectResponse
+    public function create(int $idLaporan): RedirectResponse
     {
-        $pengaduan = (new PengaduanModel())->find($idPengaduan) ?? throw $this->tidakDitemukan('Laporan tidak ditemukan.');
+        $laporan = (new LaporanModel())->find($idLaporan) ?? throw $this->tidakDitemukan('Laporan tidak ditemukan.');
 
         $aturan = [
             'status_tanggapan' => ['label' => 'Status baru', 'rules' => 'required|in_list[proses,valid,pengerjaan,selesai,tidak_valid]', 'errors' => [
@@ -38,9 +38,9 @@ class Tanggapan extends PetugasController
 
         try {
             service('tanggapan')->tambah(
-                $pengaduan,
+                $laporan,
                 $this->petugas(),
-                StatusPengaduan::from($data['status_tanggapan']),
+                StatusLaporan::from($data['status_tanggapan']),
                 $data['isi_tanggapan'],
                 $this->file('foto_tanggapan'),
                 $data['instansi_tujuan'] ?? null,
@@ -49,8 +49,8 @@ class Tanggapan extends PetugasController
             return $this->kembaliDenganError($e->getMessage());
         }
 
-        return redirect()->to(url_to('petugas.laporan.detail', $idPengaduan))
-            ->with('sukses', 'Tanggapan tersimpan. Status laporan sekarang: ' . StatusPengaduan::from($data['status_tanggapan'])->labelPetugas() . '.');
+        return redirect()->to(url_to('petugas.laporan.detail', $idLaporan))
+            ->with('sukses', 'Tanggapan tersimpan. Status laporan sekarang: ' . StatusLaporan::from($data['status_tanggapan'])->labelPetugas() . '.');
     }
 
     public function edit(int $id): string
@@ -61,7 +61,7 @@ class Tanggapan extends PetugasController
             'judul'     => 'Ubah Tanggapan',
             'menu'      => 'laporan',
             'tanggapan' => $tanggapan,
-            'pengaduan' => (new PengaduanModel())->find($tanggapan->id_pengaduan),
+            'laporan'   => (new LaporanModel())->find($tanggapan->id_laporan),
         ]);
     }
 
@@ -84,7 +84,7 @@ class Tanggapan extends PetugasController
             return $this->kembaliDenganError($e->getMessage());
         }
 
-        return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_pengaduan))->with('sukses', 'Tanggapan sudah diperbarui.');
+        return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_laporan))->with('sukses', 'Tanggapan sudah diperbarui.');
     }
 
     public function delete(int $id): RedirectResponse
@@ -94,10 +94,10 @@ class Tanggapan extends PetugasController
         try {
             $status = service('tanggapan')->hapusTerakhir($tanggapan, $this->petugas());
         } catch (AturanBisnisException $e) {
-            return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_pengaduan))->with('error', $e->getMessage());
+            return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_laporan))->with('error', $e->getMessage());
         }
 
-        return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_pengaduan))
+        return redirect()->to(url_to('petugas.laporan.detail', $tanggapan->id_laporan))
             ->with('sukses', 'Tanggapan dihapus. Status laporan kembali ke ' . $status->labelPetugas() . '.');
     }
 
@@ -123,7 +123,7 @@ class Tanggapan extends PetugasController
             $hasil = service('tanggapan')->ubahStatusMassal(
                 array_map('intval', (array) $data['id']),
                 $this->petugas(),
-                StatusPengaduan::from($data['status_tanggapan']),
+                StatusLaporan::from($data['status_tanggapan']),
                 $data['isi_tanggapan'],
                 $data['instansi_tujuan'] ?? null,
             );

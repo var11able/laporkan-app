@@ -2,8 +2,8 @@
 
 namespace Tests\Support;
 
-use App\Entities\Masyarakat;
 use App\Entities\User;
+use App\Entities\Warga;
 use App\Services\AuthService;
 use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Test\TestResponse;
@@ -30,7 +30,7 @@ abstract class FeatureTestCase extends DatabaseTestCase
         $this->sesi = [];
     }
 
-    protected function sebagaiWarga(Masyarakat $warga): static
+    protected function sebagaiWarga(Warga $warga): static
     {
         $this->sesi = [AuthService::KEY_WARGA => $warga->getId()];
 

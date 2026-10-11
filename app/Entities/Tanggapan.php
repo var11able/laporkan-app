@@ -2,23 +2,22 @@
 
 namespace App\Entities;
 
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use App\Services\UploadService;
 use CodeIgniter\Entity\Entity;
-use CodeIgniter\I18n\Time;
 
 class Tanggapan extends Entity
 {
     protected $dates = ['tgl_tanggapan'];
     protected $casts = [
         'id_tanggapan' => 'integer',
-        'id_pengaduan' => 'integer',
+        'id_laporan'   => 'integer',
         'id_user'      => 'integer',
     ];
 
-    public function status(): StatusPengaduan
+    public function status(): StatusLaporan
     {
-        return StatusPengaduan::from($this->attributes['status_tanggapan']);
+        return StatusLaporan::from($this->attributes['status_tanggapan']);
     }
 
     public function fotoUrl(): ?string

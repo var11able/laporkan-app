@@ -3,9 +3,9 @@
 namespace App\Controllers\Publik;
 
 use App\Controllers\BaseController;
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 use App\Models\KategoriModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use App\Models\ProvinsiModel;
 use App\Models\TanggapanModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -23,12 +23,12 @@ class Laporan extends BaseController
             'q_publik' => trim((string) $this->request->getGet('q')),
         ];
 
-        $model   = new PengaduanModel();
+        $model   = new LaporanModel();
         $laporan = $model->denganRelasi()->publik()->filter($filter)->terbaru()->paginate(self::PER_HALAMAN);
 
         $opsiStatus = [];
 
-        foreach (StatusPengaduan::bisaPublik() as $s) {
+        foreach (StatusLaporan::bisaPublik() as $s) {
             $opsiStatus[$s->value] = $s->labelWarga();
         }
 
@@ -47,39 +47,28 @@ class Laporan extends BaseController
 
     public function show(string $nomor): RedirectResponse|string
     {
-        $pengaduan = (new PengaduanModel())->cariNomor($nomor);
+        $laporan = (new LaporanModel())->cariNomor($nomor);
 
-        if ($pengaduan === null) {
+        if ($laporan === null) {
             throw $this->tidakDitemukan('Laporan dengan nomor tersebut tidak ditemukan.');
         }
 
-        if (! $pengaduan->tampilPublik()) {
+        if (! $laporan->tampilPublik()) {
             $warga = $this->auth->warga();
 
-            if ($warga !== null && $pengaduan->milik($warga->getId())) {
-                return redirect()->to(url_to('warga.laporan.detail', $pengaduan->id_pengaduan));
+            if ($warga !== null && $laporan->milik($warga->getId())) {
+                return redirect()->to(url_to('warga.laporan.detail', $laporan->id_laporan));
             }
 
-            return redirect()->to(url_to('lacak') . '?nomor=' . rawurlencode((string) $pengaduan->nomor_laporan));
+            return redirect()->to(url_to('lacak') . '?nomor=' . rawurlencode((string) $laporan->nomor_laporan));
         }
 
         return $this->tampil('publik/laporan_detail', [
-            'judul'     => 'Laporan ' . $pengaduan->nomor_laporan,
-            'deskripsi' => penggalan((string) $pengaduan->ringkasan_publik, 150),
+            'judul'     => 'Laporan ' . $laporan->nomor_laporan,
+            'deskripsi' => penggalan((string) $laporan->ringkasan_publik, 150),
             'menu'      => 'laporan',
-            'pengaduan' => $pengaduan,
-            'tanggapan' => (new TanggapanModel())->untukPengaduan($pengaduan->id_pengaduan),
+            'laporan'   => $laporan,
+            'tanggapan' => (new TanggapanModel())->untukLaporan($laporan->id_laporan),
         ]);
-    }
-
-    public function legacy(int $id): RedirectResponse
-    {
-        $pengaduan = (new PengaduanModel())->find($id);
-
-        if ($pengaduan === null) {
-            throw $this->tidakDitemukan();
-        }
-
-        return redirect()->to(url_to('laporan.detail', $pengaduan->nomor_laporan), 301);
     }
 }

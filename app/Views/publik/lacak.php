@@ -21,11 +21,11 @@
     <button type="submit" class="tombol tombol--utama tombol--besar" style="width:100%"><?= ikon('search') ?> Lacak</button>
 </form>
 
-<?php if ($pengaduan !== null): ?>
+<?php if ($laporan !== null): ?>
     <section class="blok" style="margin-top: var(--space-6)" aria-labelledby="judul-hasil">
-        <h2 id="judul-hasil" class="blok__judul">Laporan <?= esc($pengaduan->nomor_laporan) ?></h2>
-        <?= komponen('components/tracker', ['pengaduan' => $pengaduan, 'tanggapan' => $tanggapan, 'untuk' => 'publik']) ?>
-        <?= komponen('components/riwayat', ['pengaduan' => $pengaduan, 'tanggapan' => $tanggapan, 'untuk' => 'publik']) ?>
+        <h2 id="judul-hasil" class="blok__judul">Laporan <?= esc($laporan->nomor_laporan) ?></h2>
+        <?= komponen('components/tracker', ['laporan' => $laporan, 'tanggapan' => $tanggapan, 'untuk' => 'publik']) ?>
+        <?= komponen('components/riwayat', ['laporan' => $laporan, 'tanggapan' => $tanggapan, 'untuk' => 'publik']) ?>
         <p class="teks-kecil teks-muted">Demi melindungi pelapor, isi laporan tidak ditampilkan di sini. Pelapor dapat membaca isi dan pesan dari admin dengan <a href="<?= url_to('masuk') ?>">masuk ke akunnya</a>.</p>
     </section>
 <?php endif ?>

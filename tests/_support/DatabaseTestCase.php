@@ -3,13 +3,13 @@
 namespace Tests\Support;
 
 use App\Database\Seeds\WilayahSeeder;
-use App\Entities\Masyarakat;
-use App\Entities\Pengaduan;
+use App\Entities\LaporanKorupsi;
 use App\Entities\User;
-use App\Enums\StatusPengaduan;
-use App\Models\MasyarakatModel;
-use App\Models\PengaduanModel;
+use App\Entities\Warga;
+use App\Enums\StatusLaporan;
+use App\Models\LaporanModel;
 use App\Models\UserModel;
+use App\Models\WargaModel;
 use App\Services\UploadService;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -46,9 +46,9 @@ abstract class DatabaseTestCase extends CIUnitTestCase
         }
     }
 
-    protected function buatWarga(string $username = 'budi'): Masyarakat
+    protected function buatWarga(string $username = 'budi'): Warga
     {
-        $model = new MasyarakatModel();
+        $model = new WargaModel();
         $id    = $model->insert([
             'nama'       => 'Warga ' . $username,
             'username'   => $username,
@@ -91,9 +91,9 @@ abstract class DatabaseTestCase extends CIUnitTestCase
         return (int) $this->db->table('kategori')->where('kategori', $nama)->get()->getRow()->id_kategori;
     }
 
-    protected function buatLaporan(Masyarakat $warga, string $isi = 'Petugas loket meminta uang di luar biaya resmi.', array $tambahan = []): Pengaduan
+    protected function buatLaporan(Warga $warga, string $isi = 'Petugas loket meminta uang di luar biaya resmi.', array $tambahan = []): LaporanKorupsi
     {
-        return Services::pengaduan(false)->buat($tambahan + [
+        return Services::laporan(false)->buat($tambahan + [
             'isi_laporan'       => $isi,
             'id_kabupaten_kota' => $this->idKabupaten(),
             'id_kategori'       => $this->idKategori(),
@@ -101,25 +101,25 @@ abstract class DatabaseTestCase extends CIUnitTestCase
         ], $warga->getId());
     }
 
-    protected function jadikanPublik(Pengaduan $pengaduan, User $petugas, string $ringkasan = 'Dugaan pungutan liar di sebuah kantor pelayanan.'): Pengaduan
+    protected function jadikanPublik(LaporanKorupsi $laporan, User $petugas, string $ringkasan = 'Dugaan pungutan liar di sebuah kantor pelayanan.'): LaporanKorupsi
     {
-        Services::tanggapan(false)->tambah($pengaduan, $petugas, StatusPengaduan::Diverifikasi, 'Diverifikasi.');
-        Services::tanggapan(false)->tambah($this->muatUlang($pengaduan), $petugas, StatusPengaduan::Valid, 'Valid.');
-        Services::pengaduan(false)->aturRingkasanPublik($this->muatUlang($pengaduan), $petugas, $ringkasan);
+        Services::tanggapan(false)->tambah($laporan, $petugas, StatusLaporan::Diverifikasi, 'Diverifikasi.');
+        Services::tanggapan(false)->tambah($this->muatUlang($laporan), $petugas, StatusLaporan::Valid, 'Valid.');
+        Services::laporan(false)->aturRingkasanPublik($this->muatUlang($laporan), $petugas, $ringkasan);
 
-        return $this->muatUlang($pengaduan);
+        return $this->muatUlang($laporan);
     }
 
-    protected function muatUlang(Pengaduan $pengaduan): Pengaduan
+    protected function muatUlang(LaporanKorupsi $laporan): LaporanKorupsi
     {
-        return (new PengaduanModel())->cariDenganRelasi($pengaduan->id_pengaduan);
+        return (new LaporanModel())->cariDenganRelasi($laporan->id_laporan);
     }
 
     private function kosongkanTabel(): void
     {
         $this->db->query('SET FOREIGN_KEY_CHECKS = 0');
 
-        foreach (['log', 'bukti_pengaduan', 'tanggapan', 'pengaduan', 'saran', 'masyarakat', 'user', 'kabupaten_kota', 'provinsi', 'kelurahan', 'kecamatan'] as $tabel) {
+        foreach (['log', 'bukti_laporan', 'tanggapan', 'laporan', 'saran', 'warga', 'user', 'kabupaten_kota', 'provinsi'] as $tabel) {
             $this->db->table($tabel)->truncate();
         }
 

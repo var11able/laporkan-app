@@ -3,7 +3,7 @@ $url ??= url_to('laporan.detail', $p->nomor_laporan);
 ?>
 <article class="kartu-laporan">
     <div class="kartu-laporan__foto">
-        <img src="<?= esc(foto_pengganti((int) $p->id_pengaduan), 'attr') ?>" alt="" loading="lazy" width="480" height="360">
+        <img src="<?= esc(foto_pengganti((int) $p->id_laporan), 'attr') ?>" alt="" loading="lazy" width="480" height="360">
         <?= status_badge($p->status()) ?>
         <span class="kartu-laporan__ilustrasi">Foto ilustrasi</span>
     </div>
@@ -14,7 +14,7 @@ $url ??= url_to('laporan.detail', $p->nomor_laporan);
         </h3>
         <div class="kartu-laporan__meta">
             <?php if ($p->provinsi !== null): ?><span><?= ikon('map-pin') ?> <?= esc($p->provinsi) ?></span><?php endif ?>
-            <span><?= ikon('clock') ?> <time datetime="<?= tanggal_iso($p->tgl_pengaduan) ?>"><?= esc(waktu_relatif($p->tgl_pengaduan)) ?></time></span>
+            <span><?= ikon('clock') ?> <time datetime="<?= tanggal_iso($p->tgl_laporan) ?>"><?= esc(waktu_relatif($p->tgl_laporan)) ?></time></span>
         </div>
     </div>
 </article>

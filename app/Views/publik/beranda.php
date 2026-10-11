@@ -1,6 +1,6 @@
 <?php
-use App\Entities\Pengaduan;
-use App\Enums\StatusPengaduan;
+use App\Entities\LaporanKorupsi;
+use App\Enums\StatusLaporan;
 
 $angka = static fn (int $n): string => number_format($n, 0, ',', '.');
 $srcset = static fn (string $kunci, int $rasioT): string => implode(', ', array_map(
@@ -8,22 +8,22 @@ $srcset = static fn (string $kunci, int $rasioT): string => implode(', ', array_
     [640, 1000, 1600],
 ));
 $demoJenis  = array_slice(array_values(array_filter($kategori, static fn (array $k): bool => $k['kategori'] !== 'Lainnya')), 0, 3);
-$demoAwal   = StatusPengaduan::Baru;
+$demoAwal   = StatusLaporan::Baru;
 $demoNomor  = 'LP-' . date('Y') . '-000123';
 $demoStatus = [];
 
-foreach (StatusPengaduan::cases() as $s) {
+foreach (StatusLaporan::cases() as $s) {
     $demoStatus[$s->value] = [
         'warga'      => $s->labelWarga(),
         'petugas'    => $s->labelPetugas(),
         'ikon'       => $s->ikon(),
         'slug'       => $s->slug(),
         'penjelasan' => $s->penjelasan(),
-        'lanjut'     => array_map(static fn (StatusPengaduan $t): string => $t->value, $s->transisiBerikutnya()),
+        'lanjut'     => array_map(static fn (StatusLaporan $t): string => $t->value, $s->transisiBerikutnya()),
     ];
 }
 
-$demoAlur = array_map(static fn (StatusPengaduan $s): string => $s->value, StatusPengaduan::alur());
+$demoAlur = array_map(static fn (StatusLaporan $s): string => $s->value, StatusLaporan::alur());
 ?>
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>
@@ -129,11 +129,11 @@ $demoAlur = array_map(static fn (StatusPengaduan $s): string => $s->value, Statu
                                     <?php endforeach ?>
                                 </div>
                             </fieldset>
-                            <div class="field" data-demo-bidang="<?= StatusPengaduan::Diteruskan->value ?>" hidden>
+                            <div class="field" data-demo-bidang="<?= StatusLaporan::Diteruskan->value ?>" hidden>
                                 <label for="demo-instansi">Diteruskan ke instansi</label>
                                 <input type="text" id="demo-instansi" list="daftar-instansi" autocomplete="off" value="Komisi Pemberantasan Korupsi (KPK)">
                             </div>
-                            <div class="field" data-demo-bidang="<?= StatusPengaduan::TidakValid->value ?>" hidden>
+                            <div class="field" data-demo-bidang="<?= StatusLaporan::TidakValid->value ?>" hidden>
                                 <label for="demo-alasan">Alasan untuk pelapor</label>
                                 <textarea id="demo-alasan" rows="3">Kronologi belum menyebutkan waktu dan tempat kejadian. Silakan kirim laporan baru dengan keterangan yang lebih lengkap.</textarea>
                             </div>
@@ -154,7 +154,7 @@ $demoAlur = array_map(static fn (StatusPengaduan $s): string => $s->value, Statu
                     <p class="cara__demo-label"><?= ikon('activity') ?> Halaman lacak laporan</p>
                     <div class="kartu" data-demo-lacak aria-live="polite">
                         <?= komponen('components/tracker', [
-                            'pengaduan' => new Pengaduan(['status_pengaduan' => $demoAwal->value, 'tgl_pengaduan' => date('Y-m-d H:i:s')]),
+                            'laporan' => new LaporanKorupsi(['status_laporan' => $demoAwal->value, 'tgl_laporan' => date('Y-m-d H:i:s')]),
                             'tanggapan' => [],
                         ]) ?>
                         <button type="button" class="tombol tombol--teks tombol--kecil" data-demo-ulang hidden><?= ikon('undo') ?> Ulangi dari awal</button>

@@ -1,7 +1,7 @@
 <?php
 
-use App\Entities\Pengaduan;
-use App\Enums\StatusPengaduan;
+use App\Entities\LaporanKorupsi;
+use App\Enums\StatusLaporan;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\I18n\Time;
 
@@ -40,11 +40,11 @@ if (! function_exists('foto_stok')) {
 }
 
 if (! function_exists('foto_pengganti')) {
-    function foto_pengganti(int $idPengaduan, int $lebar = 480, ?int $tinggi = 360): string
+    function foto_pengganti(int $idLaporan, int $lebar = 480, ?int $tinggi = 360): string
     {
         $daftar = config('FotoStok')->pengganti;
 
-        return foto_stok($daftar[$idPengaduan % count($daftar)], $lebar, $tinggi);
+        return foto_stok($daftar[$idLaporan % count($daftar)], $lebar, $tinggi);
     }
 }
 
@@ -111,7 +111,7 @@ if (! function_exists('tautan_wa')) {
 }
 
 if (! function_exists('status_badge')) {
-    function status_badge(StatusPengaduan $status, string $untuk = 'warga'): string
+    function status_badge(StatusLaporan $status, string $untuk = 'warga'): string
     {
         $label = $untuk === 'petugas' ? $status->labelPetugas() : $status->labelWarga();
 
@@ -164,9 +164,9 @@ if (! function_exists('ukuran_berkas')) {
 }
 
 if (! function_exists('nama_pelapor')) {
-    function nama_pelapor(Pengaduan $pengaduan, bool $terbuka = false): string
+    function nama_pelapor(LaporanKorupsi $laporan, bool $terbuka = false): string
     {
-        return $pengaduan->rahasia && ! $terbuka ? 'Dirahasiakan' : (string) $pengaduan->nama_pelapor;
+        return $laporan->rahasia && ! $terbuka ? 'Dirahasiakan' : (string) $laporan->nama_pelapor;
     }
 }
 

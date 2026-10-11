@@ -2,15 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Entities\Masyarakat;
-use App\Enums\StatusPengaduan;
+use App\Entities\Warga;
+use App\Enums\StatusLaporan;
 use App\Models\BuktiModel;
-use App\Models\PengaduanModel;
+use App\Models\LaporanModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
 use Tests\Support\FakeUploadedFile;
 use Tests\Support\FeatureTestCase;
 
+/**
+ * @internal
+ */
 final class WargaTest extends FeatureTestCase
 {
     public function testAlurBuatLaporanLimaLangkah(): void
@@ -47,7 +50,7 @@ final class WargaTest extends FeatureTestCase
 
         $kirim = $this->lanjutkanSesi()->kirim('warga/laporan/baru/periksa', ['rahasia' => '1']);
 
-        $laporan = (new PengaduanModel())->milikWarga($warga->getId())->first();
+        $laporan = (new LaporanModel())->milikWarga($warga->getId())->first();
         $this->assertNotNull($laporan);
         $this->assertSame($this->idKabupaten(), $laporan->id_kabupaten_kota);
         $this->assertSame($this->idKategori(), $laporan->id_kategori);
@@ -55,10 +58,10 @@ final class WargaTest extends FeatureTestCase
         $this->assertSame('2026-08-17', $laporan->waktu_kejadian);
         $this->assertSame(150000, $laporan->perkiraan_kerugian);
         $this->assertTrue($laporan->rahasia);
-        $kirim->assertRedirectTo(url_to('warga.laporan.terkirim', $laporan->id_pengaduan));
+        $kirim->assertRedirectTo(url_to('warga.laporan.terkirim', $laporan->id_laporan));
         $kirim->assertSessionMissing('laporan_baru');
 
-        $this->lanjutkanSesi()->buka('warga/laporan/terkirim/' . $laporan->id_pengaduan)->assertSee($laporan->nomor_laporan);
+        $this->lanjutkanSesi()->buka('warga/laporan/terkirim/' . $laporan->id_laporan)->assertSee($laporan->nomor_laporan);
     }
 
     public function testSetiapLangkahDanHalamanPelaporTampil(): void
@@ -78,7 +81,7 @@ final class WargaTest extends FeatureTestCase
 
         $laporan = $this->buatLaporan($warga);
 
-        foreach (['warga', 'warga/laporan/' . $laporan->id_pengaduan, 'warga/laporan/' . $laporan->id_pengaduan . '/ubah', 'warga/rekap', 'warga/profil'] as $path) {
+        foreach (['warga', 'warga/laporan/' . $laporan->id_laporan, 'warga/laporan/' . $laporan->id_laporan . '/ubah', 'warga/rekap', 'warga/profil'] as $path) {
             $this->sebagaiWarga($warga)->buka($path)->assertStatus(200);
         }
     }
@@ -90,19 +93,19 @@ final class WargaTest extends FeatureTestCase
 
         $this->lanjutkanSesi()->kirim('warga/laporan/baru/periksa');
 
-        $this->assertFalse((new PengaduanModel())->milikWarga($warga->getId())->first()->rahasia);
+        $this->assertFalse((new LaporanModel())->milikWarga($warga->getId())->first()->rahasia);
     }
 
     public function testBuktiHanyaBisaDibukaPemilik(): void
     {
         $warga   = $this->buatWarga('pemilik');
-        $laporan = Services::pengaduan(false)->buat(
+        $laporan = Services::laporan(false)->buat(
             ['isi_laporan' => 'Petugas meminta uang di luar biaya resmi.', 'id_kabupaten_kota' => $this->idKabupaten()],
             $warga->getId(),
             [FakeUploadedFile::jpegDenganExif(300, 200)],
         );
-        $bukti = (new BuktiModel())->untukPengaduan($laporan->id_pengaduan);
-        $url   = 'warga/laporan/' . $laporan->id_pengaduan . '/bukti/' . $bukti[0]['id_bukti'];
+        $bukti = (new BuktiModel())->untukLaporan($laporan->id_laporan);
+        $url   = 'warga/laporan/' . $laporan->id_laporan . '/bukti/' . $bukti[0]['id_bukti'];
 
         $hasil = $this->sebagaiWarga($warga)->buka($url);
         $hasil->assertOK();
@@ -176,8 +179,8 @@ final class WargaTest extends FeatureTestCase
         $operator = $this->buatPetugas();
         $this->buatLaporan($warga, 'Laporan yang masih baru diterima.');
         $proses = $this->buatLaporan($warga, 'Laporan yang sudah terverifikasi.');
-        Services::tanggapan(false)->tambah($proses, $operator, StatusPengaduan::Diverifikasi, 'Diverifikasi.');
-        Services::tanggapan(false)->tambah($this->muatUlang($proses), $operator, StatusPengaduan::Valid, 'Valid.');
+        Services::tanggapan(false)->tambah($proses, $operator, StatusLaporan::Diverifikasi, 'Diverifikasi.');
+        Services::tanggapan(false)->tambah($this->muatUlang($proses), $operator, StatusLaporan::Valid, 'Valid.');
 
         $html = $this->sebagaiWarga($warga)->buka('warga?kelompok=diproses')->getBody();
 
@@ -190,7 +193,7 @@ final class WargaTest extends FeatureTestCase
         $laporan = $this->buatLaporan($this->buatWarga('pemilik'));
 
         $this->expectException(PageNotFoundException::class);
-        $this->sebagaiWarga($this->buatWarga('penyusup'))->buka('warga/laporan/' . $laporan->id_pengaduan);
+        $this->sebagaiWarga($this->buatWarga('penyusup'))->buka('warga/laporan/' . $laporan->id_laporan);
     }
 
     public function testWargaTidakBisaMengubahLaporanOrangLain(): void
@@ -199,12 +202,12 @@ final class WargaTest extends FeatureTestCase
         $penyusup = $this->buatWarga('penyusup');
 
         try {
-            $this->sebagaiWarga($penyusup)->kirim('warga/laporan/' . $laporan->id_pengaduan, $this->isianUbah('Diubah oleh orang lain.'), 'PUT');
+            $this->sebagaiWarga($penyusup)->kirim('warga/laporan/' . $laporan->id_laporan, $this->isianUbah('Diubah oleh orang lain.'), 'PUT');
             $this->fail('Seharusnya 404.');
         } catch (PageNotFoundException) {
         }
 
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan, 'isi_laporan' => $laporan->isi_laporan]);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan, 'isi_laporan' => $laporan->isi_laporan]);
     }
 
     public function testWargaTidakBisaMenghapusLaporanOrangLain(): void
@@ -212,27 +215,27 @@ final class WargaTest extends FeatureTestCase
         $laporan = $this->buatLaporan($this->buatWarga('pemilik'));
 
         try {
-            $this->sebagaiWarga($this->buatWarga('penyusup'))->kirim('warga/laporan/' . $laporan->id_pengaduan, [], 'DELETE');
+            $this->sebagaiWarga($this->buatWarga('penyusup'))->kirim('warga/laporan/' . $laporan->id_laporan, [], 'DELETE');
             $this->fail('Seharusnya 404.');
         } catch (PageNotFoundException) {
         }
 
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan]);
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan]);
     }
 
     public function testMengubahLaporanTidakMengubahTanggalLaporan(): void
     {
         $warga   = $this->buatWarga();
         $laporan = $this->buatLaporan($warga);
-        $this->db->table('pengaduan')->where('id_pengaduan', $laporan->id_pengaduan)->update(['tgl_pengaduan' => '2026-02-03 10:00:00']);
+        $this->db->table('laporan')->where('id_laporan', $laporan->id_laporan)->update(['tgl_laporan' => '2026-02-03 10:00:00']);
 
-        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_pengaduan, $this->isianUbah('Kronologi yang sudah diperbaiki pelapor.'), 'PUT')
-            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_pengaduan));
+        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_laporan, $this->isianUbah('Kronologi yang sudah diperbaiki pelapor.'), 'PUT')
+            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_laporan));
 
-        $this->seeInDatabase('pengaduan', [
-            'id_pengaduan'  => $laporan->id_pengaduan,
-            'isi_laporan'   => 'Kronologi yang sudah diperbaiki pelapor.',
-            'tgl_pengaduan' => '2026-02-03 10:00:00',
+        $this->seeInDatabase('laporan', [
+            'id_laporan'  => $laporan->id_laporan,
+            'isi_laporan' => 'Kronologi yang sudah diperbaiki pelapor.',
+            'tgl_laporan' => '2026-02-03 10:00:00',
         ]);
     }
 
@@ -240,13 +243,13 @@ final class WargaTest extends FeatureTestCase
     {
         $warga   = $this->buatWarga();
         $laporan = $this->buatLaporan($warga);
-        Services::tanggapan(false)->tambah($laporan, $this->buatPetugas(), StatusPengaduan::Diverifikasi, 'Diverifikasi.');
+        Services::tanggapan(false)->tambah($laporan, $this->buatPetugas(), StatusLaporan::Diverifikasi, 'Diverifikasi.');
 
-        $this->sebagaiWarga($warga)->buka('warga/laporan/' . $laporan->id_pengaduan . '/ubah')
-            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_pengaduan));
+        $this->sebagaiWarga($warga)->buka('warga/laporan/' . $laporan->id_laporan . '/ubah')
+            ->assertRedirectTo(url_to('warga.laporan.detail', $laporan->id_laporan));
 
-        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_pengaduan, [], 'DELETE');
-        $this->seeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan]);
+        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_laporan, [], 'DELETE');
+        $this->seeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan]);
     }
 
     public function testWargaMenghapusLaporanSendiri(): void
@@ -254,10 +257,10 @@ final class WargaTest extends FeatureTestCase
         $warga   = $this->buatWarga();
         $laporan = $this->buatLaporan($warga);
 
-        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_pengaduan, [], 'DELETE')
+        $this->sebagaiWarga($warga)->kirim('warga/laporan/' . $laporan->id_laporan, [], 'DELETE')
             ->assertRedirectTo(url_to('warga.beranda'));
 
-        $this->dontSeeInDatabase('pengaduan', ['id_pengaduan' => $laporan->id_pengaduan]);
+        $this->dontSeeInDatabase('laporan', ['id_laporan' => $laporan->id_laporan]);
     }
 
     public function testDaftarDanRekapHanyaBerisiLaporanSendiri(): void
@@ -282,7 +285,7 @@ final class WargaTest extends FeatureTestCase
         ], 'PUT')->assertRedirect();
 
         $this->assertSame('Kata sandi saat ini salah.', $_SESSION['_ci_validation_errors']['password_lama'] ?? null);
-        $this->assertTrue(password_verify('rahasia123', $this->db->table('masyarakat')->get()->getRow()->password));
+        $this->assertTrue(password_verify('rahasia123', $this->db->table('warga')->get()->getRow()->password));
     }
 
     public function testUbahProfil(): void
@@ -293,10 +296,10 @@ final class WargaTest extends FeatureTestCase
             'nama' => 'nama baru', 'no_telepon' => '089999999999', 'alamat' => 'Alamat baru',
         ], 'PUT')->assertRedirectTo(url_to('warga.profil'));
 
-        $this->seeInDatabase('masyarakat', ['id_masyarakat' => $warga->getId(), 'nama' => 'Nama Baru', 'no_telepon' => '089999999999']);
+        $this->seeInDatabase('warga', ['id_warga' => $warga->getId(), 'nama' => 'Nama Baru', 'no_telepon' => '089999999999']);
     }
 
-    private function isiSampaiPeriksa(Masyarakat $warga): void
+    private function isiSampaiPeriksa(Warga $warga): void
     {
         $this->sebagaiWarga($warga)->kirim('warga/laporan/baru/jenis', ['id_kategori' => (string) $this->idKategori()]);
         $this->lanjutkanSesi()->kirim('warga/laporan/baru/kronologi', ['isi_laporan' => 'Petugas meminta uang di luar biaya resmi.']);

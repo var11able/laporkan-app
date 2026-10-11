@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Enums\StatusPengaduan;
+use App\Enums\StatusLaporan;
 
 trait RekapFilter
 {
@@ -19,7 +19,7 @@ trait RekapFilter
         return [
             'dari'     => $tanggal($this->request->getGet('dari'), date('Y-m-01')),
             'sampai'   => $tanggal($this->request->getGet('sampai'), date('Y-m-d')),
-            'status'   => StatusPengaduan::tryFrom($status) !== null ? $status : '',
+            'status'   => StatusLaporan::tryFrom($status) !== null ? $status : '',
             'provinsi' => ctype_digit((string) $this->request->getGet('provinsi')) ? (string) $this->request->getGet('provinsi') : '',
             'kategori' => ctype_digit((string) $this->request->getGet('kategori')) ? (string) $this->request->getGet('kategori') : '',
         ];

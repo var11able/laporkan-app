@@ -4,7 +4,7 @@ namespace Config;
 
 use App\Services\AuditLog;
 use App\Services\AuthService;
-use App\Services\PengaduanService;
+use App\Services\LaporanService;
 use App\Services\TanggapanService;
 use App\Services\UploadService;
 use CodeIgniter\Config\BaseService;
@@ -38,13 +38,13 @@ class Services extends BaseService
         return new AuditLog();
     }
 
-    public static function pengaduan(bool $getShared = true): PengaduanService
+    public static function laporan(bool $getShared = true): LaporanService
     {
         if ($getShared) {
-            return static::getSharedInstance('pengaduan');
+            return static::getSharedInstance('laporan');
         }
 
-        return new PengaduanService(upload: static::upload(), auditLog: static::auditLog());
+        return new LaporanService(upload: static::upload(), auditLog: static::auditLog());
     }
 
     public static function tanggapan(bool $getShared = true): TanggapanService

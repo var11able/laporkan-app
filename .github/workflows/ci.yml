@@ -14,7 +14,7 @@ jobs:
         image: mariadb:11.4
         env:
           MARIADB_ROOT_PASSWORD: root
-          MARIADB_DATABASE: laporpak_test
+          MARIADB_DATABASE: laporkan_test
         ports:
           - 3306:3306
         options: >-
@@ -24,7 +24,7 @@ jobs:
     env:
       CI_ENVIRONMENT: testing
       database_tests_hostname: 127.0.0.1
-      database_tests_database: laporpak_test
+      database_tests_database: laporkan_test
       database_tests_username: root
       database_tests_password: root
 

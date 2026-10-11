@@ -1,13 +1,13 @@
 <?php
-use App\Entities\Pengaduan;
-use App\Enums\StatusPengaduan;
+use App\Entities\LaporanKorupsi;
+use App\Enums\StatusLaporan;
 
 $query = static function (array $ubah) use ($filter): string {
     $q = array_filter(array_merge($filter, $ubah), static fn ($v) => $v !== '' && $v !== null);
 
     return $q === [] ? '' : '?' . http_build_query($q);
 };
-$statusAktif = StatusPengaduan::tryFrom($filter['status']);
+$statusAktif = StatusLaporan::tryFrom($filter['status']);
 ?>
 <?= $this->extend('layouts/petugas') ?>
 <?= $this->section('konten') ?>
@@ -23,7 +23,7 @@ $statusAktif = StatusPengaduan::tryFrom($filter['status']);
 <nav aria-label="Filter status">
     <ul class="tab">
         <li><a href="<?= url_to('petugas.laporan') . $query(['status' => '']) ?>"<?= $statusAktif === null ? ' aria-current="page"' : '' ?>>Semua <span class="tab__jumlah"><?= array_sum($jumlah) ?></span></a></li>
-        <?php foreach (StatusPengaduan::cases() as $s): ?>
+        <?php foreach (StatusLaporan::cases() as $s): ?>
             <li><a href="<?= url_to('petugas.laporan') . $query(['status' => $s->value]) ?>"<?= $statusAktif === $s ? ' aria-current="page"' : '' ?>><?= esc($s->labelPetugas()) ?> <span class="tab__jumlah"><?= $jumlah[$s->value] ?></span></a></li>
         <?php endforeach ?>
     </ul>
@@ -52,8 +52,8 @@ $statusAktif = StatusPengaduan::tryFrom($filter['status']);
             <div class="field">
                 <label for="massal-status">Ubah status ke</label>
                 <select id="massal-status" name="status_tanggapan" required>
-                    <?php foreach (StatusPengaduan::cases() as $s): ?>
-                        <?php if ($s !== StatusPengaduan::Baru): ?><option value="<?= $s->value ?>"><?= esc($s->labelPetugas()) ?></option><?php endif ?>
+                    <?php foreach (StatusLaporan::cases() as $s): ?>
+                        <?php if ($s !== StatusLaporan::Baru): ?><option value="<?= $s->value ?>"><?= esc($s->labelPetugas()) ?></option><?php endif ?>
                     <?php endforeach ?>
                 </select>
             </div>
@@ -86,8 +86,8 @@ $statusAktif = StatusPengaduan::tryFrom($filter['status']);
                 <tbody>
                     <?php foreach ($laporan as $p): ?>
                         <tr>
-                            <td class="kolom-cek"><input type="checkbox" name="id[]" value="<?= $p->id_pengaduan ?>" aria-label="Pilih <?= esc($p->nomor_laporan, 'attr') ?>"></td>
-                            <td class="nowrap" data-label="Nomor"><a class="tautan-baris" href="<?= url_to('petugas.laporan.detail', $p->id_pengaduan) ?>"><?= esc($p->nomor_laporan) ?></a><br><span class="teks-muted"><?= tanggal($p->tgl_pengaduan, false) ?></span></td>
+                            <td class="kolom-cek"><input type="checkbox" name="id[]" value="<?= $p->id_laporan ?>" aria-label="Pilih <?= esc($p->nomor_laporan, 'attr') ?>"></td>
+                            <td class="nowrap" data-label="Nomor"><a class="tautan-baris" href="<?= url_to('petugas.laporan.detail', $p->id_laporan) ?>"><?= esc($p->nomor_laporan) ?></a><br><span class="teks-muted"><?= tanggal($p->tgl_laporan, false) ?></span></td>
                             <td data-label="Laporan"><?= esc(penggalan($p->isi_laporan, 90)) ?></td>
                             <td data-label="Pelapor"><?= $p->rahasia ? ikon('lock') . ' <span class="teks-muted">Dirahasiakan</span>' : esc($p->nama_pelapor) ?></td>
                             <td data-label="Jenis"><?= esc($p->kategori ?? '–') ?><br><span class="teks-muted"><?= esc($p->provinsi ?? '–') ?></span></td>
@@ -105,7 +105,7 @@ $statusAktif = StatusPengaduan::tryFrom($filter['status']);
             </table>
         </div>
     </form>
-    <p class="teks-muted teks-kecil">Laporan baru yang menunggu lebih dari <?= Pengaduan::BATAS_HARI_TANGGAPAN ?> hari ditandai <?= ikon('alert') ?>.</p>
+    <p class="teks-muted teks-kecil">Laporan baru yang menunggu lebih dari <?= LaporanKorupsi::BATAS_HARI_TANGGAPAN ?> hari ditandai <?= ikon('alert') ?>.</p>
     <?= $pager->links('default', 'laporkan') ?>
 <?php endif ?>
 

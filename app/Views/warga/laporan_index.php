@@ -64,13 +64,13 @@ $chip = [
     <?php else: ?>
         <ul class="daftar-laporan">
             <?php foreach ($laporan as $p): ?>
-                <?php $diperbarui = $p->tanggapan_terakhir ?? $p->tgl_pengaduan; ?>
+                <?php $diperbarui = $p->tanggapan_terakhir ?? $p->tgl_laporan; ?>
                 <li>
                     <div class="daftar-laporan__foto">
                         <?= ikon($p->status()->ikon()) ?>
                     </div>
                     <div>
-                        <h2 class="daftar-laporan__judul potong-2"><a href="<?= url_to('warga.laporan.detail', $p->id_pengaduan) ?>"><?= esc($p->isi_laporan) ?></a></h2>
+                        <h2 class="daftar-laporan__judul potong-2"><a href="<?= url_to('warga.laporan.detail', $p->id_laporan) ?>"><?= esc($p->isi_laporan) ?></a></h2>
                         <div class="daftar-laporan__meta">
                             <?= status_badge($p->status()) ?>
                             <span class="angka-tabular"><?= esc($p->nomor_laporan) ?></span>
