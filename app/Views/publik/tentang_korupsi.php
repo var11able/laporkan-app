@@ -1,5 +1,6 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>
+<?php ob_start() ?>
 
 <h1>Tentang Korupsi</h1>
 <p class="lead">Korupsi adalah tindakan menyalahgunakan kekuasaan yang dipercayakan untuk mendapatkan keuntungan pribadi. Korupsi tidak hanya terjadi di kantor pemerintahan, tetapi juga di kehidupan sehari-hari di sekitar kita.</p>
@@ -44,4 +45,15 @@
 </ul>
 <p>Untuk keadaan darurat atau kejahatan yang sedang terjadi, hubungi 112.</p>
 
+<h2 id="kredit">Tentang situs demo ini &amp; kredit</h2>
+<p><strong>LaporKan adalah proyek portofolio.</strong> Semua laporan, nama, angka, dan sebaran di peta adalah data fiktif yang dibuat otomatis untuk demo, dan tidak menggambarkan kejadian, orang, atau instansi nyata.</p>
+<ul>
+    <li><strong>Batas provinsi di peta</strong>: <a href="https://www.geoboundaries.org/" rel="noopener">geoBoundaries</a> IDN ADM2, sumber data Badan Pusat Statistik (BPS), WFP, dan OCHA ROAP, lisensi <a href="https://creativecommons.org/licenses/by/3.0/igo/" rel="noopener">CC BY 3.0 IGO</a>. Batas kabupaten/kota digabung menjadi 38 provinsi dan disederhanakan.</li>
+    <li><strong>Daratan dunia di peta</strong>: <a href="https://www.naturalearthdata.com/" rel="noopener">Natural Earth</a> (domain publik) melalui world-atlas.</li>
+    <li><strong>Foto ilustrasi</strong>: <a href="https://unsplash.com/" rel="noopener">Unsplash</a>, lisensi Unsplash.</li>
+    <li><strong>Huruf</strong>: Plus Jakarta Sans oleh Tokotype, SIL Open Font License.</li>
+    <li><strong>Ikon</strong>: Lucide, lisensi ISC. <strong>Pustaka peta</strong>: d3-geo dan topojson-client, lisensi ISC.</li>
+</ul>
+
+<?= bacaan((string) ob_get_clean()) ?>
 <?= $this->endSection() ?>

@@ -11,7 +11,7 @@ class PetugasAuth extends BaseController
 
     public function masuk(): string
     {
-        return $this->tampil('auth/masuk_petugas', ['judul' => 'Masuk Admin']);
+        return $this->tampil('auth/masuk_petugas', ['judul' => 'Masuk Admin', 'varian' => 'petugas', 'sambutan' => 'Panel kerja admin LaporKan.']);
     }
 
     public function prosesMasuk(): RedirectResponse

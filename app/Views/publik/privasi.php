@@ -1,5 +1,6 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>
+<?php ob_start() ?>
 
 <h1>Kebijakan Privasi</h1>
 <p class="lead">Melaporkan korupsi butuh keberanian. Halaman ini menjelaskan data apa yang kami kumpulkan, siapa yang dapat melihatnya, dan bagaimana kami melindungi Anda sebagai pelapor.</p>
@@ -22,6 +23,14 @@
 </ul>
 <p>Kami tidak menjual atau membagikan data Anda kepada pihak lain di luar keperluan penanganan laporan.</p>
 
+<h2>Peta sebaran laporan</h2>
+<ul>
+    <li>Peta di beranda hanya menghitung laporan yang <strong>sudah diverifikasi dan memiliki ringkasan publik</strong>. Laporan yang belum diperiksa atau tidak dapat ditindaklanjuti tidak ikut dihitung.</li>
+    <li>Peta hanya menampilkan <strong>tingkat provinsi</strong>. Kabupaten/kota, instansi, dan lokasi kejadian tidak pernah ditampilkan.</li>
+    <li>Provinsi dengan kurang dari <?= (int) config('PetaSebaran')->ambang ?> laporan ditampilkan sebagai "&lt;<?= (int) config('PetaSebaran')->ambang ?>", tanpa jumlah pastinya, dan tanpa penanda laporan baru.</li>
+    <li>Peta menunjukkan jumlah laporan, bukan tingkat korupsi suatu daerah.</li>
+</ul>
+
 <h2>Bukti yang Anda lampirkan</h2>
 <p>Bukti disimpan di luar folder publik dan hanya dapat dibuka oleh Anda dan admin. Data lokasi, jenis ponsel, dan waktu pengambilan di dalam foto dihapus otomatis saat diunggah. Dokumen PDF tidak diubah dan dapat menyimpan nama pembuatnya; jika itu nama Anda, simpan ulang dokumennya sebagai PDF baru atau lampirkan foto dokumennya.</p>
 
@@ -40,4 +49,5 @@
 
 <p class="teks-muted teks-kecil">Terakhir diperbarui: <?= tanggal('2026-10-01', false) ?></p>
 
+<?= bacaan((string) ob_get_clean()) ?>
 <?= $this->endSection() ?>

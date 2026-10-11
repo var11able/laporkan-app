@@ -18,4 +18,23 @@ class FotoStok extends BaseConfig
         'tanda-tangan' => '1521791055366-0d553872125f',
     ];
     public array $pengganti = ['dokumen', 'berkas', 'meja', 'tanda-tangan'];
+    public array $ukuran    = [
+        'hero'         => [[640, 448], [1000, 700], [1600, 1120], [900, 1200]],
+        'dokumen'      => [[480, 320], [480, 360], [1200, 500]],
+        'berkas'       => [[480, 360]],
+        'meja'         => [[480, 360]],
+        'tanda-tangan' => [[480, 360]],
+    ];
+
+    public static function namaBerkas(string $kunci, int $lebar, ?int $tinggi): string
+    {
+        return 'foto/' . $kunci . '-' . $lebar . ($tinggi !== null ? 'x' . $tinggi : '') . '.webp';
+    }
+
+    public function urlSumber(string $kunci, int $lebar, ?int $tinggi, int $kualitas = 70): string
+    {
+        $id = $this->foto[$kunci] ?? $this->foto['kota'];
+
+        return 'https://images.unsplash.com/photo-' . $id . '?auto=format&fit=crop&q=' . $kualitas . '&w=' . $lebar . ($tinggi !== null ? '&h=' . $tinggi : '');
+    }
 }

@@ -43,6 +43,101 @@ function aturTema() {
     if (tema === 'system') simpan.hapus('tema'); else simpan.taruh('tema', tema);
     terapkan(tema === 'system' ? null : tema);
   }));
+  document.querySelectorAll('[data-tema-alih]').forEach((t) => t.addEventListener('click', () => {
+    const kini = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const tema = kini === 'dark' ? 'light' : 'dark';
+    simpan.taruh('tema', tema);
+    terapkan(tema);
+  }));
+}
+
+function aturAppbar() {
+  const appbar = document.querySelector('.ada-hero [data-appbar]');
+  const hero = document.querySelector('.hero');
+  if (!appbar || !hero || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(([e]) => appbar.classList.toggle('appbar--melayang', !e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' }).observe(hero);
+}
+
+function aturHitungNaik() {
+  const angka = [...document.querySelectorAll('[data-hitung-naik]')];
+  if (!angka.length || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  const format = new Intl.NumberFormat('id-ID');
+  const amati = new IntersectionObserver((entri) => entri.forEach(({ isIntersecting, target }) => {
+    if (!isIntersecting) return;
+    amati.unobserve(target);
+    const akhir = Number(target.dataset.hitungNaik);
+    const asli = target.textContent;
+    const mulai = performance.now();
+    const tik = (kini) => {
+      const t = Math.min(1, (kini - mulai) / 900);
+      target.textContent = format.format(Math.round(akhir * (1 - (1 - t) ** 3)));
+      if (t < 1) requestAnimationFrame(tik); else target.textContent = asli;
+    };
+    requestAnimationFrame(tik);
+  }), { threshold: 0.6 });
+  angka.forEach((el) => { if (Number(el.dataset.hitungNaik) > 0) amati.observe(el); });
+}
+
+function aturVideo() {
+  const kurangiGerak = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('video[data-video-otomatis]').forEach((v) => {
+    const tombol = v.parentElement.querySelector('[data-video-alih]');
+    const label = tombol?.getAttribute('aria-label').replace(/^Jeda /, '') ?? '';
+    let dijedaPengguna = kurangiGerak;
+    let terlihat = false;
+    const perbarui = () => {
+      if (!tombol) return;
+      tombol.classList.toggle('is-jalan', !v.paused);
+      tombol.setAttribute('aria-label', (v.paused ? 'Putar ' : 'Jeda ') + label);
+    };
+    v.addEventListener('play', perbarui);
+    v.addEventListener('pause', perbarui);
+    if (tombol) {
+      tombol.hidden = false;
+      tombol.addEventListener('click', () => {
+        if (v.paused) { dijedaPengguna = false; v.play().catch(() => {}); } else { dijedaPengguna = true; v.pause(); }
+      });
+    }
+    perbarui();
+    if (!('IntersectionObserver' in window)) return;
+    new IntersectionObserver(([e]) => {
+      terlihat = e.isIntersecting;
+      if (terlihat && !dijedaPengguna) v.play().catch(() => {});
+      else if (!terlihat && !v.paused) v.pause();
+    }, { threshold: 0.4 }).observe(v);
+  });
+}
+
+function aturPeta() {
+  const semua = [...document.querySelectorAll('[data-peta]')];
+  if (!semua.length) return;
+  const muatSkrip = (src) => new Promise((ok, gagal) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = ok;
+    s.onerror = gagal;
+    document.head.append(s);
+  });
+  const ambil = (url) => fetch(url).then((r) => { if (!r.ok) throw new Error(url); return r.json(); });
+  let pustaka = null;
+  const siapkan = (el) => {
+    pustaka ||= (async () => {
+      for (const src of JSON.parse(el.dataset.skrip)) await muatSkrip(src);
+      const [indonesia, dunia, modul] = await Promise.all([ambil(el.dataset.geoIndonesia), ambil(el.dataset.geoDunia), import(el.dataset.modul)]);
+      return { indonesia, dunia, pasang: modul.default };
+    })();
+    return pustaka;
+  };
+  const pasang = (el) => siapkan(el)
+    .then(({ indonesia, dunia, pasang: p }) => p(el, { indonesia, dunia }))
+    .catch(() => { el.hidden = true; });
+  if (!('IntersectionObserver' in window)) { semua.forEach(pasang); return; }
+  const amati = new IntersectionObserver((entri) => entri.forEach(({ isIntersecting, target }) => {
+    if (!isIntersecting) return;
+    amati.unobserve(target);
+    pasang(target);
+  }), { rootMargin: '400px 0px' });
+  semua.forEach((el) => amati.observe(el));
 }
 
 function aturLaci() {
@@ -305,131 +400,12 @@ function aturFokusError() {
   document.querySelector('.ringkasan-error[data-fokus]')?.focus();
 }
 
-function aturDemoCara() {
-  const akar = document.querySelector('[data-demo-cara]');
-  if (!akar) return;
-  const info = JSON.parse(akar.dataset.status);
-  const alur = JSON.parse(akar.dataset.alur);
-  const [baru] = alur;
-  const ditolak = Object.keys(info).find((k) => !alur.includes(k));
-  const diteruskan = akar.querySelector('[data-demo-bidang]:not([data-demo-bidang="' + ditolak + '"])')?.dataset.demoBidang;
-  const ikon = (id) => `<svg class="ikon" aria-hidden="true" focusable="false"><use href="${akar.dataset.ikon}#${id}"></use></svg>`;
-  const el = (sel) => akar.querySelector(sel);
-  const semua = (sel) => [...akar.querySelectorAll(sel)];
-  const tahun = new Date().getFullYear();
-  const kirim = el('[data-demo-kirim]');
-  const teksKirim = kirim.querySelector('span');
-  const tracker = el('.tracker');
-  const tahap = tracker.querySelector('.tahap');
-  const opsi = el('[data-demo-opsi]');
-  let urut = 123;
-  let state;
-
-  const awal = () => ({
-    status: baru,
-    nomor: `LP-${tahun}-${String(urut).padStart(6, '0')}`,
-    jenis: el('input[name="demo_jenis"]:checked')?.value || '',
-    rahasia: el('[data-demo-rahasia]').checked,
-    tujuan: null,
-  });
-
-  const tampilBidang = () => {
-    const pilih = opsi.querySelector('input:checked')?.value;
-    semua('[data-demo-bidang]').forEach((b) => { b.hidden = b.dataset.demoBidang !== pilih; });
-  };
-
-  const gambarAdmin = () => {
-    const s = info[state.status];
-    semua('[data-demo-nomor]').forEach((n) => { n.textContent = state.nomor; });
-    el('[data-demo-lencana]').innerHTML = `<span class="status status--${s.slug}">${ikon(s.ikon)}</span>`;
-    el('[data-demo-lencana] .status').append(s.petugas);
-    el('[data-demo-jenis]').textContent = state.jenis;
-    el('[data-demo-pelapor]').textContent = state.rahasia ? 'Dirahasiakan' : 'Pelapor Demo';
-    opsi.replaceChildren(...s.lanjut.map((v, i) => {
-      const item = document.createElement('div');
-      item.className = 'pilihan__item';
-      item.innerHTML = `<input type="radio" id="demo-status-${v}" name="demo_status" value="${v}"${i === 0 ? ' checked' : ''}><label for="demo-status-${v}">${ikon(info[v].ikon)} </label>`;
-      item.querySelector('label').append(info[v].petugas);
-      return item;
-    }));
-    el('[data-demo-form]').hidden = s.lanjut.length === 0;
-    el('[data-demo-tuntas]').hidden = s.lanjut.length !== 0;
-    tampilBidang();
-  };
-
-  const gambarTracker = () => {
-    const s = info[state.status];
-    const posisi = alur.indexOf(state.status);
-    tracker.className = `tracker tracker--${s.slug}`;
-    tracker.querySelector('.tracker__ikon').innerHTML = ikon(s.ikon);
-    tracker.querySelector('.tracker__judul').textContent = s.warga;
-    tracker.querySelector('.tracker__penjelasan').textContent = s.penjelasan;
-    tracker.querySelector('.tracker__update time').textContent = 'Baru saja';
-    tracker.querySelector('[data-demo-tujuan]')?.remove();
-    if (state.tujuan) {
-      const p = document.createElement('p');
-      p.className = 'tracker__penjelasan';
-      p.dataset.demoTujuan = '';
-      p.innerHTML = `${ikon('send')} Diteruskan ke <strong></strong>`;
-      p.querySelector('strong').textContent = state.tujuan;
-      tracker.querySelector('.tracker__update').before(p);
-    }
-    tahap.querySelectorAll('li').forEach((li, i) => {
-      li.toggleAttribute('data-lewat', i < posisi);
-      li.toggleAttribute('data-kini', i === posisi);
-      if (i === posisi) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
-      li.querySelector('.sr-only')?.remove();
-      if (i < posisi) li.insertAdjacentHTML('beforeend', '<span class="sr-only">(selesai)</span>');
-    });
-    tahap.hidden = state.status === ditolak;
-    tracker.querySelector('.alasan')?.remove();
-    if (state.status === ditolak) {
-      const alasan = document.createElement('div');
-      alasan.className = 'alasan';
-      alasan.innerHTML = '<p class="tebal">Alasan dari admin</p><p></p>';
-      alasan.lastChild.textContent = el('#demo-alasan').value.trim();
-      tracker.append(alasan);
-    }
-    el('[data-demo-ulang]').hidden = info[state.status].lanjut.length !== 0;
-  };
-
-  const gambar = () => { gambarAdmin(); gambarTracker(); };
-
-  kirim.addEventListener('click', () => {
-    urut += 1;
-    state = awal();
-    el('[data-demo-terkirim]').hidden = false;
-    teksKirim.textContent = 'Kirim laporan lain';
-    gambar();
-  });
-
-  opsi.addEventListener('change', tampilBidang);
-
-  el('[data-demo-simpan]').addEventListener('click', () => {
-    const pilih = opsi.querySelector('input:checked')?.value;
-    if (!pilih) return;
-    const wajib = el(`[data-demo-bidang="${pilih}"] input, [data-demo-bidang="${pilih}"] textarea`);
-    if (wajib && !wajib.value.trim()) { wajib.focus(); return; }
-    if (pilih === diteruskan) state.tujuan = wajib.value.trim();
-    state.status = pilih;
-    gambar();
-  });
-
-  el('[data-demo-ulang]').addEventListener('click', () => {
-    urut = 123;
-    state = awal();
-    el('[data-demo-terkirim]').hidden = true;
-    teksKirim.textContent = 'Kirim laporan';
-    gambar();
-    kirim.focus();
-  });
-
-  state = awal();
-  gambar();
-}
-
 aturSnackbar();
 aturTema();
+aturAppbar();
+aturHitungNaik();
+aturPeta();
+aturVideo();
 aturLaci();
 aturSidebar();
 aturMenuAkun();
@@ -445,7 +421,6 @@ aturPilihSemua();
 aturAutoSubmit();
 aturPintasan();
 aturFokusError();
-aturDemoCara();
 document.querySelectorAll('details[data-buka-desktop]').forEach((el) => {
   const mq = matchMedia('(min-width: 768px)');
   const atur = () => { if (mq.matches) el.open = true; };

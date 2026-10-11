@@ -8,6 +8,7 @@ use App\Models\KategoriModel;
 use App\Models\LaporanModel;
 use App\Models\ProvinsiModel;
 use App\Models\TanggapanModel;
+use App\Services\SebaranPeta;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Laporan extends BaseController
@@ -42,6 +43,7 @@ class Laporan extends BaseController
             'opsiStatus'   => $opsiStatus,
             'opsiProvinsi' => (new ProvinsiModel())->opsi(),
             'opsiKategori' => (new KategoriModel())->opsi(),
+            'peta'         => (new SebaranPeta())->publik(),
         ]);
     }
 

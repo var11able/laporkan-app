@@ -8,12 +8,12 @@ class Halaman extends BaseController
 {
     public function privasi(): string
     {
-        return $this->tampil('publik/privasi', ['judul' => 'Kebijakan Privasi', 'lebar' => 'sempit']);
+        return $this->tampil('publik/privasi', ['judul' => 'Kebijakan Privasi']);
     }
 
     public function syarat(): string
     {
-        return $this->tampil('publik/syarat', ['judul' => 'Syarat & Ketentuan', 'lebar' => 'sempit']);
+        return $this->tampil('publik/syarat', ['judul' => 'Syarat & Ketentuan']);
     }
 
     public function tentangKorupsi(): string
@@ -22,7 +22,6 @@ class Halaman extends BaseController
             'judul'     => 'Tentang Korupsi',
             'deskripsi' => 'Mengenal tujuh kelompok tindak pidana korupsi, peran masyarakat, dan cara melaporkannya.',
             'menu'      => 'tentang',
-            'lebar'     => 'sempit',
         ]);
     }
 }

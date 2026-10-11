@@ -31,6 +31,16 @@ class LaporanModel extends Model
         'perkiraan_kerugian' => 'permit_empty|is_natural',
         'status_laporan'     => 'permit_empty|in_list[belum_ditanggapi,proses,valid,pengerjaan,selesai,tidak_valid]',
     ];
+    protected $afterInsert = ['lupakanSebaran'];
+    protected $afterUpdate = ['lupakanSebaran'];
+    protected $afterDelete = ['lupakanSebaran'];
+
+    protected function lupakanSebaran(array $data): array
+    {
+        cache()->delete(config('PetaSebaran')->kunciCache);
+
+        return $data;
+    }
 
     public function denganRelasi(): static
     {
@@ -184,18 +194,40 @@ class LaporanModel extends Model
         return array_map(static fn (array $r) => ['label' => $r['label'], 'jumlah' => (int) $r['jumlah']], $rows);
     }
 
-    public function jumlahPerProvinsi(int $batas = 8): array
+    public function sebaranProvinsiPublik(string $sejak): array
     {
-        $rows = $this->db->table('laporan p')
-            ->select("COALESCE(pr.provinsi, 'Tanpa wilayah') AS label, COUNT(*) AS jumlah", false)
-            ->join('kabupaten_kota kk', 'kk.id_kabupaten_kota = p.id_kabupaten_kota', 'left')
-            ->join('provinsi pr', 'pr.id_provinsi = kk.id_provinsi', 'left')
-            ->groupBy('label')
+        $status = implode(', ', array_map(fn (StatusLaporan $s) => $this->db->escape($s->value), StatusLaporan::bisaPublik()));
+
+        return $this->sebaranProvinsiDengan(
+            "p.status_laporan IN ({$status}) AND p.ringkasan_publik IS NOT NULL AND p.ringkasan_publik != ''",
+            "(SELECT MIN(t.tgl_tanggapan) FROM tanggapan t WHERE t.id_laporan = p.id_laporan AND t.status_tanggapan IN ({$status}))",
+            $sejak,
+        );
+    }
+
+    public function sebaranProvinsi(string $sejak, ?StatusLaporan $status = null): array
+    {
+        return $this->sebaranProvinsiDengan($status === null ? '1 = 1' : 'p.status_laporan = ' . $this->db->escape($status->value), 'p.tgl_laporan', $sejak);
+    }
+
+    private function sebaranProvinsiDengan(string $syarat, string $tanggal, string $sejak): array
+    {
+        $rows = $this->db->table('provinsi pr')
+            ->select('pr.id_provinsi, pr.kode, pr.provinsi, COUNT(p.id_laporan) AS jumlah, COALESCE(SUM(' . $tanggal . ' >= ' . $this->db->escape($sejak) . '), 0) AS baru', false)
+            ->join('kabupaten_kota kk', 'kk.id_provinsi = pr.id_provinsi', 'left')
+            ->join('laporan p', 'p.id_kabupaten_kota = kk.id_kabupaten_kota AND ' . $syarat, 'left', false)
+            ->groupBy('pr.id_provinsi')
             ->orderBy('jumlah', 'DESC')
-            ->limit($batas)
+            ->orderBy('pr.provinsi', 'ASC')
             ->get()->getResultArray();
 
-        return array_map(static fn (array $r) => ['label' => $r['label'], 'jumlah' => (int) $r['jumlah']], $rows);
+        return array_map(static fn (array $r) => [
+            'id'     => (int) $r['id_provinsi'],
+            'kode'   => (string) $r['kode'],
+            'nama'   => $r['provinsi'],
+            'jumlah' => (int) $r['jumlah'],
+            'baru'   => (int) $r['baru'],
+        ], $rows);
     }
 
     public function jumlahPerStatus(?int $idWarga = null): array

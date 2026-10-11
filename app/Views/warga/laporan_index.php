@@ -15,8 +15,16 @@ $chip = [
         <p class="teks-muted mb-0">Halo, <?= esc(explode(' ', $warga->nama)[0]) ?></p>
         <h1 class="mb-0">Laporan Saya</h1>
     </div>
-    <a class="tombol tombol--utama tombol-lapor-header" href="<?= url_to('warga.laporan.baru') ?>"><?= ikon('plus') ?> Buat Laporan</a>
+    <a class="tombol tombol--lapor tombol-lapor-header" href="<?= url_to('warga.laporan.baru') ?>"><?= ikon('plus') ?> Buat Laporan</a>
 </div>
+
+<?php if ($total > 0): ?>
+    <dl class="kartu-angka-grid kartu-angka-grid--3">
+        <?= komponen('components/kartu_angka', ['label' => 'Diterima', 'ikon' => 'inbox', 'nilai' => $jumlah['diterima'] ?? 0, 'url' => url_to('warga.beranda') . '?kelompok=diterima']) ?>
+        <?= komponen('components/kartu_angka', ['label' => 'Diproses', 'ikon' => 'send', 'nilai' => $jumlah['diproses'] ?? 0, 'url' => url_to('warga.beranda') . '?kelompok=diproses']) ?>
+        <?= komponen('components/kartu_angka', ['label' => 'Selesai', 'ikon' => 'check-circle', 'nilai' => $jumlah['selesai'] ?? 0, 'url' => url_to('warga.beranda') . '?kelompok=selesai']) ?>
+    </dl>
+<?php endif ?>
 
 <?php if ($adaDraf): ?>
     <div class="banner banner--peringatan">
