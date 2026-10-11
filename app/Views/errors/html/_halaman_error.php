@@ -11,27 +11,21 @@ helper(['url', 'tampilan']);
     <link rel="stylesheet" href="<?= aset('css/app.css') ?>">
 </head>
 <body>
-<div class="tata-letak">
-    <header class="appbar">
-        <div class="wadah appbar__baris">
-            <a class="logo" href="<?= base_url() ?>">
-                <span class="logo__tanda"><?= ikon('message') ?></span>
-                <span class="logo__teks">LaporKan<small>Lapor Korupsi</small></span>
-            </a>
+<main id="konten" class="galat">
+    <div class="galat__bingkai">
+        <a class="logo logo--terang" href="<?= base_url() ?>">
+            <span class="logo__teks">LaporKan</span>
+        </a>
+        <p class="galat__kode" aria-hidden="true"><?= esc($kode) ?></p>
+        <p class="galat__label">Kode <?= esc($kode) ?></p>
+        <h1><?= esc($judul) ?></h1>
+        <div class="galat__isi"><?= $isi ?></div>
+        <p class="galat__label">Situs demo portofolio · Semua data fiktif</p>
+        <div class="tombol-grup">
+            <a class="tombol tombol--terang" href="<?= base_url() ?>"><?= ikon('home') ?> Kembali ke Beranda</a>
+            <a class="tombol tombol--kaca" href="<?= base_url('lacak') ?>"><?= ikon('search') ?> Lacak laporan</a>
         </div>
-    </header>
-    <main id="konten" class="halaman">
-        <div class="wadah wadah--sempit">
-            <div class="kosong__ikon" style="margin:0 0 var(--space-4)"><?= ikon('help') ?></div>
-            <p class="teks-muted tebal mb-0">Kode <?= esc($kode) ?></p>
-            <h1><?= esc($judul) ?></h1>
-            <?= $isi ?>
-            <div class="tombol-grup">
-                <a class="tombol tombol--utama" href="<?= base_url() ?>"><?= ikon('home') ?> Ke beranda</a>
-                <a class="tombol" href="<?= base_url('lacak') ?>"><?= ikon('search') ?> Lacak laporan</a>
-            </div>
-        </div>
-    </main>
-</div>
+    </div>
+</main>
 </body>
 </html>

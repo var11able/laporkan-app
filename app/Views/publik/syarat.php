@@ -1,5 +1,6 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('konten') ?>
+<?php ob_start() ?>
 
 <h1>Syarat &amp; Ketentuan</h1>
 <p class="lead">Dengan memakai LaporKan, Anda menyetujui ketentuan berikut.</p>
@@ -33,4 +34,5 @@
 
 <p class="teks-muted teks-kecil">Terakhir diperbarui: <?= tanggal('2026-10-01', false) ?></p>
 
+<?= bacaan((string) ob_get_clean()) ?>
 <?= $this->endSection() ?>

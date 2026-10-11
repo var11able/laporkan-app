@@ -19,7 +19,6 @@
         <a class="tombol" href="<?= esc($kembali ?? url_to('beranda'), 'attr') ?>">Kembali</a>
     </div>
     <header class="kop">
-        <div class="kop__logo" aria-hidden="true">L</div>
         <div class="kop__teks">
             <strong>LAPORKAN</strong>
             <span>Website Pelaporan Kasus Korupsi di Indonesia</span>

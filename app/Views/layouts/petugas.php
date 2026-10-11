@@ -13,16 +13,15 @@ $item = static fn (string $kunci, string $url, string $ikonId, string $label, st
 </head>
 <body>
 <a class="skip-link" href="#konten">Langsung ke konten utama</a>
+<?= komponen('components/pita_demo') ?>
 <div class="dasbor">
     <aside class="sidebar" id="sidebar" aria-label="Menu admin">
         <div class="sidebar__kepala">
-            <a class="logo" href="<?= url_to('petugas.dasbor') ?>">
-                <span class="logo__tanda"><?= ikon('message') ?></span>
-                <span class="logo__teks">LaporKan<small>Panel Admin</small></span>
-            </a>
+            <?= komponen('components/logo', ['url' => url_to('petugas.dasbor'), 'sub' => 'Panel Admin']) ?>
             <button type="button" class="tombol tombol--ikon sidebar__ciutkan" data-ciutkan aria-pressed="false" aria-label="Ciutkan menu"><?= ikon('sidebar') ?></button>
         </div>
         <nav>
+            <p class="sidebar__grup">Kerja</p>
             <ul>
                 <?= $item('dasbor', url_to('petugas.dasbor'), 'home', 'Dasbor') ?>
                 <?= $item('laporan', url_to('petugas.laporan'), 'inbox', 'Kotak Masuk', ! empty($jumlahBaru) ? '<span class="sidebar__lencana" title="Laporan baru">' . (int) $jumlahBaru . '</span>' : '') ?>
@@ -30,7 +29,7 @@ $item = static fn (string $kunci, string $url, string $ikonId, string $label, st
             </ul>
             <p class="sidebar__grup">Data</p>
             <ul>
-                <?= $item('warga', url_to('petugas.warga'), 'users', 'Masyarakat') ?>
+                <?= $item('warga', url_to('petugas.warga'), 'users', 'Warga') ?>
                 <?= $item('provinsi', url_to('petugas.provinsi'), 'layers', 'Provinsi') ?>
                 <?= $item('kabupaten_kota', url_to('petugas.kabupaten_kota'), 'map-pin', 'Kabupaten/Kota') ?>
                 <?= $item('saran', url_to('petugas.saran'), 'message', 'Kritik & Saran') ?>
@@ -58,10 +57,12 @@ $item = static fn (string $kunci, string $url, string $ikonId, string $label, st
                 <input type="search" id="cari-cepat" name="q" placeholder="Cari nomor atau isi laporan" value="<?= esc((string) service('request')->getGet('q'), 'attr') ?>">
                 <kbd aria-hidden="true">/</kbd>
             </form>
-            <details class="menu-akun topbar__akun">
-                <summary aria-label="Menu akun <?= esc($petugas->nama, 'attr') ?>" class="baris" style="gap: 8px">
+            <div class="topbar__akun">
+            <?= komponen('components/tombol_tema') ?>
+            <details class="menu-akun">
+                <summary aria-label="Menu akun <?= esc($petugas->nama, 'attr') ?>" class="menu-akun__ringkas">
                     <span class="avatar" aria-hidden="true"><?= esc($inisial) ?></span>
-                    <span class="teks-kecil" style="line-height:1.2"><strong><?= esc($petugas->nama) ?></strong><br><span class="teks-muted"><?= esc($petugas->jabatan()->label()) ?></span></span>
+                    <span class="menu-akun__identitas teks-kecil"><strong><?= esc($petugas->nama) ?></strong><span class="teks-muted"><?= esc($petugas->jabatan()->label()) ?></span></span>
                 </summary>
                 <ul class="menu-akun__daftar">
                     <li><a href="<?= url_to('petugas.profil') ?>"><?= ikon('user') ?> Profil &amp; tampilan</a></li>
@@ -74,6 +75,7 @@ $item = static fn (string $kunci, string $url, string $ikonId, string $label, st
                     </li>
                 </ul>
             </details>
+            </div>
         </header>
         <main class="dasbor__konten" id="konten" tabindex="-1">
             <?= komponen('components/flash') ?>

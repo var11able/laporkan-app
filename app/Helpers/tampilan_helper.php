@@ -4,6 +4,7 @@ use App\Entities\LaporanKorupsi;
 use App\Enums\StatusLaporan;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\I18n\Time;
+use Config\FotoStok;
 
 if (! function_exists('komponen')) {
     function komponen(string $nama, array $data = []): string
@@ -33,9 +34,51 @@ if (! function_exists('aset')) {
 if (! function_exists('foto_stok')) {
     function foto_stok(string $kunci, int $lebar = 800, ?int $tinggi = null): string
     {
-        $id = config('FotoStok')->foto[$kunci] ?? config('FotoStok')->foto['kota'];
+        $berkas = FotoStok::namaBerkas($kunci, $lebar, $tinggi);
 
-        return 'https://images.unsplash.com/photo-' . $id . '?auto=format&fit=crop&q=70&w=' . $lebar . ($tinggi !== null ? '&h=' . $tinggi : '');
+        return is_file(FCPATH . 'assets/' . $berkas) ? aset($berkas) : config('FotoStok')->urlSumber($kunci, $lebar, $tinggi);
+    }
+}
+
+if (! function_exists('bacaan')) {
+    function bacaan(string $html): string
+    {
+        $kepala = '';
+
+        if (preg_match('#^\s*(<h1[^>]*>.*?</h1>\s*(?:<p class="lead[^"]*">.*?</p>)?)#s', $html, $m) === 1) {
+            $kepala = $m[1];
+            $html   = substr($html, strlen($m[0]));
+        }
+
+        $daftar = [];
+        $html   = (string) preg_replace_callback('#<h2([^>]*)>(.*?)</h2>#s', static function (array $m) use (&$daftar): string {
+            $label = trim(strip_tags($m[2]));
+
+            if (preg_match('#\bid="([^"]+)"#', $m[1], $ada) === 1) {
+                $daftar[$ada[1]] = $label;
+
+                return $m[0];
+            }
+
+            $id          = url_title($label, '-', true);
+            $daftar[$id] = $label;
+
+            return '<h2 id="' . esc($id, 'attr') . '"' . $m[1] . '>' . $m[2] . '</h2>';
+        }, $html);
+
+        $nav = '';
+
+        if (count($daftar) > 1) {
+            $nav = '<nav class="bacaan__daftar" aria-label="Daftar isi"><p class="bacaan__daftar-judul">Di halaman ini</p><ol>';
+
+            foreach ($daftar as $id => $label) {
+                $nav .= '<li><a href="#' . esc($id, 'attr') . '">' . esc(html_entity_decode($label)) . '</a></li>';
+            }
+
+            $nav .= '</ol></nav>';
+        }
+
+        return '<div class="bacaan"><header class="bacaan__kepala">' . $kepala . '</header>' . $nav . '<div class="bacaan__isi">' . $html . '</div></div>';
     }
 }
 

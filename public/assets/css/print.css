@@ -5,11 +5,14 @@
   :root { color-scheme: light; }
 
   html, body { background: #fff !important; color: #000 !important; }
-  body { font-family: "Public Sans", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; }
+  body { font-family: "Plus Jakarta Sans", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; }
   h1, h2, h3 { color: #000; page-break-after: avoid; }
 
   .skip-link, .appbar, .navbawah, .footer, .sidebar, .topbar, .filter, .tab, .paginasi, .snackbar-wadah, .banner,
-  .tombol, .tombol-grup, .aksi-massal, .jangan-cetak, dialog { display: none !important; }
+  .tombol, .tombol-grup, .aksi-massal, .jangan-cetak, dialog, .peta, .hero, .penutup, .cara__video, .pita-demo { display: none !important; }
+  h1 { font-size: 18pt; letter-spacing: 0; }
+  h2 { font-size: 13pt; letter-spacing: 0; }
+  .kartu, .tabel-wadah, .kartu-angka { background: none !important; padding: 0; }
 
   .dasbor, .dasbor__utama { display: block; }
   .dasbor__konten, .wadah { padding: 0; max-width: none; }
@@ -30,7 +33,6 @@
 }
 
 .kop { display: flex; align-items: center; gap: 16px; padding-bottom: 10px; margin-bottom: 18px; border-bottom: 3px double #000; }
-.kop__logo { width: 56px; height: 56px; border: 2px solid #000; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 22px; }
 .kop__teks { flex: 1; text-align: center; }
 .kop__teks strong { display: block; font-size: 15pt; letter-spacing: 0.02em; }
 .kop__teks span { display: block; font-size: 10pt; }
