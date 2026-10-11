@@ -50,13 +50,12 @@ class UserAgents extends BaseConfig
         'unix'            => 'Unknown Unix OS',
         'symbian'         => 'Symbian OS',
     ];
-
     public array $browsers = [
-        'OPR'    => 'Opera',
-        'Flock'  => 'Flock',
-        'Edge'   => 'Spartan',
-        'Edg'    => 'Edge',
-        'Chrome' => 'Chrome',
+        'OPR'               => 'Opera',
+        'Flock'             => 'Flock',
+        'Edge'              => 'Spartan',
+        'Edg'               => 'Edge',
+        'Chrome'            => 'Chrome',
         'Opera.*?Version'   => 'Opera',
         'Opera'             => 'Opera',
         'MSIE'              => 'Internet Explorer',
@@ -83,11 +82,10 @@ class UserAgents extends BaseConfig
         'Ubuntu'            => 'Ubuntu Web Browser',
         'Vivaldi'           => 'Vivaldi',
     ];
-
     public array $mobiles = [
         'mobileexplorer' => 'Mobile Explorer',
-        'palmsource' => 'Palm',
-        'palmscape' => 'Palmscape',
+        'palmsource'     => 'Palm',
+        'palmscape'      => 'Palmscape',
 
         'motorola'             => 'Motorola',
         'nokia'                => 'Nokia',
@@ -166,7 +164,6 @@ class UserAgents extends BaseConfig
         'smartphone' => 'Generic Mobile',
         'cellphone'  => 'Generic Mobile',
     ];
-
     public array $robots = [
         'googlebot'            => 'Googlebot',
         'google-pagerenderer'  => 'Google Page Renderer',

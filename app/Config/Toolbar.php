@@ -22,23 +22,16 @@ class Toolbar extends BaseConfig
         Routes::class,
         Events::class,
     ];
-
-    public bool $collectVarData = true;
-
-    public int $maxHistory = 20;
-
-    public string $viewsPath = SYSTEMPATH . 'Debug/Toolbar/Views/';
-
-    public int $maxQueries = 100;
-
+    public bool $collectVarData      = true;
+    public int $maxHistory           = 20;
+    public string $viewsPath         = SYSTEMPATH . 'Debug/Toolbar/Views/';
+    public int $maxQueries           = 100;
     public array $watchedDirectories = [
         'app',
     ];
-
     public array $watchedExtensions = [
         'php', 'css', 'js', 'html', 'svg', 'json', 'env',
     ];
-
     public array $disableOnHeaders = [
         'X-Requested-With' => 'xmlhttprequest',
         'HX-Request'       => 'true',

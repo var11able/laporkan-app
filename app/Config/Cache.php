@@ -2,7 +2,6 @@
 
 namespace Config;
 
-use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Cache\Handlers\ApcuHandler;
 use CodeIgniter\Cache\Handlers\DummyHandler;
 use CodeIgniter\Cache\Handlers\FileHandler;
@@ -14,28 +13,21 @@ use CodeIgniter\Config\BaseConfig;
 
 class Cache extends BaseConfig
 {
-    public string $handler = 'file';
-
-    public string $backupHandler = 'dummy';
-
-    public string $prefix = '';
-
-    public int $ttl = 60;
-
+    public string $handler            = 'file';
+    public string $backupHandler      = 'dummy';
+    public string $prefix             = '';
+    public int $ttl                   = 60;
     public string $reservedCharacters = '{}()/\@:';
-
-    public array $file = [
+    public array $file                = [
         'storePath' => WRITEPATH . 'cache/',
         'mode'      => 0640,
     ];
-
     public array $memcached = [
         'host'   => '127.0.0.1',
         'port'   => 11211,
         'weight' => 1,
         'raw'    => false,
     ];
-
     public array $redis = [
         'host'       => '127.0.0.1',
         'password'   => null,
@@ -45,7 +37,6 @@ class Cache extends BaseConfig
         'persistent' => false,
         'database'   => 0,
     ];
-
     public array $validHandlers = [
         'apcu'      => ApcuHandler::class,
         'dummy'     => DummyHandler::class,
@@ -55,8 +46,6 @@ class Cache extends BaseConfig
         'redis'     => RedisHandler::class,
         'wincache'  => WincacheHandler::class,
     ];
-
-    public $cacheQueryString = false;
-
+    public $cacheQueryString       = false;
     public array $cacheStatusCodes = [];
 }

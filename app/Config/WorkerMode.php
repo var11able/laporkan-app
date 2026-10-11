@@ -14,8 +14,6 @@ class WorkerMode
         'routes',
         'cache',
     ];
-
-    public array $resetEventListeners = [];
-
+    public array $resetEventListeners   = [];
     public bool $forceGarbageCollection = true;
 }

@@ -17,6 +17,5 @@ class FotoStok extends BaseConfig
         'meja'         => '1512486130939-2c4f79935e4f',
         'tanda-tangan' => '1521791055366-0d553872125f',
     ];
-
     public array $pengganti = ['dokumen', 'berkas', 'meja', 'tanda-tangan'];
 }

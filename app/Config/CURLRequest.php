@@ -10,6 +10,5 @@ class CURLRequest extends BaseConfig
         CURL_LOCK_DATA_CONNECT,
         CURL_LOCK_DATA_DNS,
     ];
-
     public bool $shareOptions = false;
 }

@@ -32,7 +32,6 @@ class Filters extends BaseFilters
         'role'          => RoleFilter::class,
         'guest'         => GuestFilter::class,
     ];
-
     public array $required = [
         'before' => [
             'forcehttps',
@@ -44,7 +43,6 @@ class Filters extends BaseFilters
             'toolbar',
         ],
     ];
-
     public array $globals = [
         'before' => [
             'csrf',
@@ -54,8 +52,6 @@ class Filters extends BaseFilters
             'secureheaders',
         ],
     ];
-
     public array $methods = [];
-
     public array $filters = [];
 }
